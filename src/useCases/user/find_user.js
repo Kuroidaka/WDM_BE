@@ -14,11 +14,11 @@ export default (dependencies) => {
             });
             console.log("user", User)
             return {
-                data: User ?? []
+                data: User
             };
             
         } catch (error) {
-            console.log(error)
+            console.log("___find user usecase error___", error)
             return {
                 error: error
             }

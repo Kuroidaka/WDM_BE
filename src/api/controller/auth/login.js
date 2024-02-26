@@ -17,7 +17,7 @@ export default (dependencies) => {
 
             const user = await findUser(dependencies).execute({ username })
             if(user?.error) return res.status(500).json({ error: user?.error });
-            if(user?.data.length === 0) return res.status(200).json(notFound);
+            if(!user?.data) return res.status(200).json(notFound);
 
             // compare password
             if (!await bcrypt.compare(password, user.data.password)) {

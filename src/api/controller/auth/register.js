@@ -23,7 +23,9 @@ export default (dependencies) => {
             // check exist user
             const user = await findUser(dependencies).execute({ username })
             if(user?.error) return res.status(500).json({ error: user?.error });
-            if(user?.data) return res.status(200).json({ msg: "username already exist" });
+            if(user?.data) {
+                return res.status(200).json({ msg: "username already exist" });
+            }
             
             // check password
             if (!password) return res.status(400).json({msg : 'Password is required'});

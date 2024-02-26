@@ -1,6 +1,7 @@
 import express from 'express'
 
 import authController from "../controller/auth/index.js"
+import verifyToken from "../middleware/validate_token.js"
 
 export default (dependencies) => {
     const router = express.Router()
