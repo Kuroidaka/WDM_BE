@@ -7,17 +7,26 @@ export default (dependencies) => {
 
     const execute = async ({ username }) => {
         try {
-            const User = await DB.user.findUnique({
-                where: {
-                    username
-                },
-            });
-            console.log("user", User)
-            return {
-                data: User
-            };
+            let listUser 
+
+            if(username) { // search by username
+                const user = await DB.user.findUnique({
+                    where: {
+                        username
+                    },
+                });
+                if(user) listUser = [user] 
+                else listUser = []
+            }
+            else {// search all
+                listUser = await DB.user.findMany({});
+            }
             
-        } catch (error) {
+            return {
+                data: listUser
+            };
+        }
+         catch (error) {
             console.log("___find user usecase error___", error)
             return {
                 error: error

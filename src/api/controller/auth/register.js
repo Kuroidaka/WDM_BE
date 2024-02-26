@@ -23,9 +23,9 @@ export default (dependencies) => {
             if(!req.user.isAdmin) return res.status(401).json({ msg: "you don't have permission" });
 
             // check exist user
-            const user = await findUser(dependencies).execute({ username })
-            if(user?.error) return res.status(500).json({ error: user?.error });
-            if(user?.data) {
+            const result = await findUser(dependencies).execute({ username })
+            if(result?.error) return res.status(500).json({ error: result?.error });
+            if(result.data.length > 0) {
                 return res.status(200).json({ msg: "username already exist" });
             }
             

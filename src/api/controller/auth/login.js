@@ -14,22 +14,24 @@ export default (dependencies) => {
         try {
             const { username, password } = req.body;
             const notFound = { msg : 'username or password is incorrect' }
-
-            const user = await findUser(dependencies).execute({ username })
-            if(user?.error) return res.status(500).json({ error: user?.error });
-            if(!user?.data) return res.status(200).json(notFound);
-
+            // check exist account
+            const result = await findUser(dependencies).execute({ username })
+            if(result?.error) return res.status(500).json({ error: result?.error });
+            if(result.data.length === 0) return res.status(200).json(notFound);
+            const account = result.data[0]
+            
             // compare password
-            if (!await bcrypt.compare(password, user.data.password)) {
+            if (!await bcrypt.compare(password, account.password)) {
                 return res.status(401).json(notFound);   
             }
 
             // // gen token
-            const token = jwt.sign({ id: user.data.id, username, isAdmin: user.data.isAdmin }, 'secret-key', { expiresIn: '1h' });
+            const token = jwt.sign({ id: account.id, username, isAdmin: account.isAdmin }, 'secret-key', { expiresIn: '1h' });
             console.log(token)
 
             return res.status(200).json({ data: { token } });
         } catch (error) {
+            console.log(error)
             return res.status(500).json({ error: error });
         }
    
