@@ -20,6 +20,8 @@ export default (dependencies) => {
                 password
             } = req.body;
 
+            if(!req.user.isAdmin) return res.status(401).json({ msg: "you don't have permission" });
+
             // check exist user
             const user = await findUser(dependencies).execute({ username })
             if(user?.error) return res.status(500).json({ error: user?.error });
@@ -46,7 +48,7 @@ export default (dependencies) => {
 
             return res.status(200).json({ data: newUser.data });
         } catch (error) {
-         
+            console.log(error)
             return res.status(500).json({ error: error });
         }
    

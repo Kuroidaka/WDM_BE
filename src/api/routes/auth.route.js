@@ -18,7 +18,7 @@ export default (dependencies) => {
 
     router  
         .route("/register")
-        .post(registerController)
+        .post(verifyToken, registerController)
 
 
     return router
