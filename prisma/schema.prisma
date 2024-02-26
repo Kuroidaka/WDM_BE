@@ -6,122 +6,147 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 model Food {
-  id        Int          @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String
   price     Int
-  status    Boolean 
-  is_drink  Boolean 
+  status    Boolean     @default(true)
+  is_drink  Boolean
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  inventory Int
   FoodOrder FoodOrder[]
 }
 
 model FoodOrder {
-  food_id     Int
-  weeding_id  Int
-  count       Int
-  note        String?
-  Food        Food        @relation(fields: [food_id], references: [id])
-  Wedding     Wedding     @relation(fields: [weeding_id], references: [id])
+  food_id    Int
+  weeding_id Int
+  count      Int
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Food       Food     @relation(fields: [food_id], references: [id])
+  Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
 
   @@id([food_id, weeding_id])
+  @@index([weeding_id], map: "FoodOrder_weeding_id_fkey")
 }
 
 model Bill {
-  id            Int        @id @default(autoincrement())
-  wedding_id    Int
-  payment_date  DateTime
+  id                  Int      @id @default(autoincrement())
+  wedding_id          Int
+  payment_date        DateTime
   service_total_price Int
-  total_price   Int
-  Wedding       Wedding   @relation(fields: [wedding_id], references: [id])
+  total_price         Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  Wedding             Wedding  @relation(fields: [wedding_id], references: [id])
+
+  @@index([wedding_id], map: "Bill_wedding_id_fkey")
 }
 
 model Lobby {
-  id             Int         @id @default(autoincrement())
-  type           String
+  id              Int       @id @default(autoincrement())
   max_table_count Int
   min_table_price Int
-  note           String?
-  Wedding        Wedding[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  name            String
+  Wedding         Wedding[]
 }
-
-// Purpose: This enum represents the shifts of a wedding.
-enum Shift {
-    noon
-    evening
-}
-
 
 model Wedding {
-  id           Int          @id @default(autoincrement())
-  groom        String
-  bride        String
-  order_date   DateTime
-  wedding_date DateTime
-  shift        Shift 
-  lobby_id     Int
-  Customer_id  Int
-  deposit      Int
-  table_count  Int
+  id              Int            @id @default(autoincrement())
+  groom           String
+  bride           String
+  order_date      DateTime
+  wedding_date    DateTime
+  shift           Shift
+  lobby_id        Int
+  Customer_id     Int
+  deposit         Int
+  table_count     Int
   min_table_price Int
-  is_poorly_mode Boolean
-  arrived_time DateTime
-  Bill         Bill[]
-  FoodOrder    FoodOrder[]
-  ServiceOrder ServiceOrder[]
-  Lobby        Lobby        @relation(fields: [lobby_id], references: [id])
-  Customer     Customer     @relation(fields: [Customer_id], references: [id])
+  is_poorly_mode  Boolean
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  note            String?
+  Bill            Bill[]
+  FoodOrder       FoodOrder[]
+  ServiceOrder    ServiceOrder[]
+  Customer        Customer       @relation(fields: [Customer_id], references: [id])
+  Lobby           Lobby          @relation(fields: [lobby_id], references: [id])
+
+  @@index([Customer_id], map: "Wedding_Customer_id_fkey")
+  @@index([lobby_id], map: "Wedding_lobby_id_fkey")
 }
 
-
 model Customer {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   phone     String
-  Wedding        Wedding[]
-
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Wedding   Wedding[]
 }
 
 model Service {
-  id           Int          @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   name         String
   price        Int
   status       Boolean
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   ServiceOrder ServiceOrder[]
 }
 
 model ServiceOrder {
-  service_id  Int
-  weeding_id  Int
-  count       Int
-  Service     Service    @relation(fields: [service_id], references: [id])
-  Wedding     Wedding    @relation(fields: [weeding_id], references: [id])
+  service_id Int
+  weeding_id Int
+  count      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Service    Service  @relation(fields: [service_id], references: [id])
+  Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
 
-   @@id([service_id, weeding_id])
+  @@id([service_id, weeding_id])
+  @@index([weeding_id], map: "ServiceOrder_weeding_id_fkey")
 }
 
-
 model User {
-  id           Int             @id @default(autoincrement())
-  isAdmin      Boolean        
-  display_name String
-  username     String
-  password     String
+  id             Int              @id @default(autoincrement())
+  isAdmin        Boolean          @default(false)
+  display_name   String
+  username       String           @unique
+  password       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   UserPermission UserPermission[]
 }
 
 model Permission {
-  id           Int             @id @default(autoincrement())
-  name         String
-  description  String?
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   UserPermission UserPermission[]
 }
 
 model UserPermission {
   user_id       Int
   permission_id Int
-  User          User          @relation(fields: [user_id], references: [id])
-  Permission    Permission    @relation(fields: [permission_id], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  Permission    Permission @relation(fields: [permission_id], references: [id])
+  User          User       @relation(fields: [user_id], references: [id])
 
   @@id([user_id, permission_id])
+  @@index([permission_id], map: "UserPermission_permission_id_fkey")
 }
 
+enum Shift {
+  noon
+  evening
+}

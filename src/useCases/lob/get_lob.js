@@ -7,10 +7,10 @@ export default (dependencies) => {
 
     const execute = async () => {
         try {
-            const Food = await DB.food.findMany({});
+            const lobby = await DB.lobby.findMany({});
             
             return {
-                data: Food
+                data: lobby
             };
         } catch (error) {
             return { 

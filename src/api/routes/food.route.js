@@ -7,12 +7,17 @@ export default (dependencies) => {
 
     const {
         getFoodController,
+        importFoodController
 
     } = foodController(dependencies)
 
     router  
         .route("/get")
         .get(getFoodController)
+
+    router  
+        .route("/import")
+        .post(importFoodController)
 
     return router
 }
