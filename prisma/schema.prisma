@@ -21,16 +21,16 @@ model Food {
 
 model FoodOrder {
   food_id    Int
-  weeding_id Int
+  wedding_id Int
   count      Int
   note       String?
   created_at DateTime @default(now())
   updated_at DateTime    @default(now())
   Food       Food     @relation(fields: [food_id], references: [id])
-  Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
+  Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id([food_id, weeding_id])
-  @@index([weeding_id], map: "FoodOrder_weeding_id_fkey")
+  @@id([food_id, wedding_id])
+  @@index([wedding_id], map: "FoodOrder_wedding_id_fkey")
 }
 
 model Bill {
@@ -104,15 +104,15 @@ model Service {
 
 model ServiceOrder {
   service_id Int
-  weeding_id Int
+  wedding_id Int
   count      Int
   created_at DateTime @default(now())
   updated_at DateTime    @default(now())
   Service    Service  @relation(fields: [service_id], references: [id])
-  Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
+  Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id([service_id, weeding_id])
-  @@index([weeding_id], map: "ServiceOrder_weeding_id_fkey")
+  @@id([service_id, wedding_id])
+  @@index([wedding_id], map: "ServiceOrder_wedding_id_fkey")
 }
 
 model User {
