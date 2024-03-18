@@ -1,7 +1,7 @@
-import express from "express"
-import foodRouter from "./food.route.js"
-import lobRouter from "./lob.route.js"
-import authRouter from "./auth.route.js"
+const express = require("express")
+const foodRouter  = require("./food.route.js")
+const lobRouter  = require("./lob.route.js")
+const authRouter  = require("./auth.route.js")
 
 const routes = (dependencies) => {
     const router = express.Router()
@@ -19,4 +19,4 @@ const routes = (dependencies) => {
     return router
 }
 
-export default routes
+module.exports = routes

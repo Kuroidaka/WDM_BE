@@ -8,15 +8,15 @@ datasource db {
 }
 
 model Food {
-  id        Int         @id @default(autoincrement())
-  name      String
-  price     Int
-  status    Boolean     @default(true)
-  is_drink  Boolean
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  inventory Int
-  FoodOrder FoodOrder[]
+  id         Int         @id @default(autoincrement())
+  name       String
+  price      Int
+  status     Boolean     @default(true)
+  is_drink   Boolean
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now())
+  inventory  Int
+  FoodOrder  FoodOrder[]
 }
 
 model FoodOrder {
@@ -24,8 +24,8 @@ model FoodOrder {
   weeding_id Int
   count      Int
   note       String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime    @default(now())
   Food       Food     @relation(fields: [food_id], references: [id])
   Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
 
@@ -39,8 +39,8 @@ model Bill {
   payment_date        DateTime
   service_total_price Int
   total_price         Int
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  created_at          DateTime @default(now())
+  updated_at          DateTime     @default(now())
   Wedding             Wedding  @relation(fields: [wedding_id], references: [id])
 
   @@index([wedding_id], map: "Bill_wedding_id_fkey")
@@ -50,8 +50,10 @@ model Lobby {
   id              Int       @id @default(autoincrement())
   max_table_count Int
   min_table_price Int
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  is_penalty_mode Boolean   @default(false)
+  deposit_percent Int       @default(30)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime     @default(now())
   name            String
   Wedding         Wedding[]
 }
@@ -64,31 +66,30 @@ model Wedding {
   wedding_date    DateTime
   shift           Shift
   lobby_id        Int
-  Customer_id     Int
+  customer_id     Int
   deposit         Int
   table_count     Int
   min_table_price Int
-  is_poorly_mode  Boolean
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  created_at      DateTime       @default(now())
+  updated_at      DateTime     @default(now())
   note            String?
   Bill            Bill[]
   FoodOrder       FoodOrder[]
   ServiceOrder    ServiceOrder[]
-  Customer        Customer       @relation(fields: [Customer_id], references: [id])
+  Customer        Customer       @relation(fields: [customer_id], references: [id])
   Lobby           Lobby          @relation(fields: [lobby_id], references: [id])
 
-  @@index([Customer_id], map: "Wedding_Customer_id_fkey")
+  @@index([customer_id], map: "Wedding_Customer_id_fkey")
   @@index([lobby_id], map: "Wedding_lobby_id_fkey")
 }
 
 model Customer {
-  id        Int       @id @default(autoincrement())
-  name      String
-  phone     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Wedding   Wedding[]
+  id         Int       @id @default(autoincrement())
+  name       String
+  phone      String
+  created_at DateTime  @default(now())
+  updated_at DateTime    @default(now())
+  Wedding    Wedding[]
 }
 
 model Service {
@@ -96,8 +97,8 @@ model Service {
   name         String
   price        Int
   status       Boolean
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  created_at   DateTime       @default(now())
+  updated_at   DateTime    @default(now())
   ServiceOrder ServiceOrder[]
 }
 
@@ -105,8 +106,8 @@ model ServiceOrder {
   service_id Int
   weeding_id Int
   count      Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime    @default(now())
   Service    Service  @relation(fields: [service_id], references: [id])
   Wedding    Wedding  @relation(fields: [weeding_id], references: [id])
 
@@ -120,8 +121,8 @@ model User {
   display_name   String
   username       String           @unique
   password       String
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  created_at     DateTime         @default(now())
+  updated_at     DateTime    @default(now())
   UserPermission UserPermission[]
 }
 
@@ -129,16 +130,16 @@ model Permission {
   id             Int              @id @default(autoincrement())
   name           String
   description    String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  created_at     DateTime         @default(now())
+  updated_at     DateTime    @default(now())
   UserPermission UserPermission[]
 }
 
 model UserPermission {
   user_id       Int
   permission_id Int
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  created_at    DateTime   @default(now())
+  updated_at    DateTime     @default(now())
   Permission    Permission @relation(fields: [permission_id], references: [id])
   User          User       @relation(fields: [user_id], references: [id])
 

@@ -1,8 +1,8 @@
-import loginController from "./login.js"
-import registerController from "./register.js"
+const loginController  = require("./login.js")
+const registerController  = require("./register.js")
 
 // food controller 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     return {
         loginController: loginController(dependencies),
         registerController: registerController(dependencies),

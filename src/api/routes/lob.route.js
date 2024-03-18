@@ -1,13 +1,13 @@
-import express from 'express'
+const express  = require( 'express')
 
-import lobController from "../controller/lob/index.js"
+const lobController  = require( "../controller/lob/index.js")
 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const router = express.Router()
 
     const {
         getLobController,
-        importLobController
+        constLobController
     } = lobController(dependencies)
 
     router  
@@ -16,7 +16,7 @@ export default (dependencies) => {
 
     router  
         .route("/import")
-        .post(importLobController)
+        .post(constLobController)
 
     return router
 }

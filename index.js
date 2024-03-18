@@ -1,5 +1,5 @@
 
-import init from "./src/app.js"
+const init  = require("./src/app.js")
 
 const { start } = init
 

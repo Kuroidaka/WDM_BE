@@ -1,8 +1,8 @@
-import bcrypt from'bcryptjs';
-import jwt from'jsonwebtoken';
+const bcrypt  = require('bcryptjs')
+const jwt  = require('jsonwebtoken')
 
 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const { useCases:{
         user: {
             addUser,

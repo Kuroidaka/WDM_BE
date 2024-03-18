@@ -1,9 +1,9 @@
-import getLob from "./get_lob.js";
-import importLob from "./import_lob.js";
+const getLob  = require("./get_lob.js")
+const constLob  = require("./import_lob.js")
 
 const lob = {
     getLob,
-    importLob
+    constLob
 }
 
-export default lob
+module.exports = lob

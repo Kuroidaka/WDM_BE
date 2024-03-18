@@ -1,8 +1,8 @@
-import express from 'express'
+const express = require('express')
 
-import foodController from "../controller/food/index.js"
+const foodController = require( "../controller/food")
 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const router = express.Router()
 
     const {

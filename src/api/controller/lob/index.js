@@ -1,11 +1,11 @@
-import getLobController from "./get_lob.js"
-import importLobController from "./import_lob.js"
+const getLobController  = require("./get_lob.js")
+const constLobController  = require("./import_lob.js")
 
 // food controller 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     return {
         getLobController: getLobController(dependencies),
-        importLobController: importLobController(dependencies)
+        constLobController: constLobController(dependencies)
 
     }
 }

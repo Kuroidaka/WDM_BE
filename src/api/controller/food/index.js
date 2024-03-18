@@ -1,8 +1,8 @@
-import getFoodController from "./get_food.js"
-import importFoodController from "./import_food.js"
+const getFoodController  = require("./get_food.js")
+const importFoodController  = require("./import_food.js")
 
 // food controller 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     return {
         getFoodController: getFoodController(dependencies),
         importFoodController: importFoodController(dependencies)
