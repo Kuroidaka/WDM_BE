@@ -1,7 +1,7 @@
 module.exports = (dependencies) => {
   const {
     useCases: {
-      lob: { constLob },
+      lob: { importLob },
     },
   } = dependencies
 
@@ -13,7 +13,7 @@ module.exports = (dependencies) => {
         minTablePrice 
       } = req.body
 
-      const result = await constLob(dependencies).execute({
+      const result = await importLob(dependencies).execute({
         name,
         maxTableCount,
         minTablePrice 

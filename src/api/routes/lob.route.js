@@ -7,7 +7,7 @@ module.exports = (dependencies) => {
 
     const {
         getLobController,
-        constLobController
+        importLobController
     } = lobController(dependencies)
 
     router  
@@ -16,7 +16,7 @@ module.exports = (dependencies) => {
 
     router  
         .route("/import")
-        .post(constLobController)
+        .post(importLobController)
 
     return router
 }
