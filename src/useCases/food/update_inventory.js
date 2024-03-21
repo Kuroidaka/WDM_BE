@@ -8,32 +8,29 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        isAdmin,
-        displayName,
-        username,
-        password
+        id,
+        count
     }) => {
         try {
-            const user = await DB.user.create({
-                data : {
-                    "id": nanoid(),
-                    "isAdmin": isAdmin,
-                    "display_name": displayName,
-                    "username": username,
-                    "password": password
-                }
+            const Food = await DB.food.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    inventory: count,
+                },
             });
-            
             return {
-                data: user
-             };
-            
+                data: Food
+            }
+
         } catch (error) {
             console.log(error)
             return {
                 error: error
             }
         }
+        
     }
 
     return { execute };

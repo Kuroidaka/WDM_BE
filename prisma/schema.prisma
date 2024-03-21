@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Food {
-  id         Int         @id @default(autoincrement())
+  id         String      @id
   name       String
   price      Int
   status     Boolean     @default(true)
@@ -20,12 +20,12 @@ model Food {
 }
 
 model FoodOrder {
-  food_id    Int
-  wedding_id Int
+  food_id    String
   count      Int
   note       String?
   created_at DateTime @default(now())
-  updated_at DateTime    @default(now())
+  updated_at DateTime @default(now())
+  wedding_id String
   Food       Food     @relation(fields: [food_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
@@ -34,44 +34,43 @@ model FoodOrder {
 }
 
 model Bill {
-  id                  Int      @id @default(autoincrement())
-  wedding_id          Int
+  id                  String   @id
+  wedding_id          String
   payment_date        DateTime
   service_total_price Int
   total_price         Int
   created_at          DateTime @default(now())
-  updated_at          DateTime     @default(now())
+  updated_at          DateTime @default(now())
   Wedding             Wedding  @relation(fields: [wedding_id], references: [id])
 
   @@index([wedding_id], map: "Bill_wedding_id_fkey")
 }
 
 model Lobby {
-  id              Int       @id @default(autoincrement())
+  id              String    @id
   max_table_count Int
   min_table_price Int
   is_penalty_mode Boolean   @default(false)
   deposit_percent Int       @default(30)
   created_at      DateTime  @default(now())
-  updated_at      DateTime     @default(now())
+  updated_at      DateTime  @default(now())
   name            String
   Wedding         Wedding[]
 }
 
 model Wedding {
-  id              Int            @id @default(autoincrement())
+  id              String         @id
   groom           String
   bride           String
-  order_date      DateTime
   wedding_date    DateTime
   shift           Shift
-  lobby_id        Int
-  customer_id     Int
+  lobby_id        String
+  customer_id     String
   deposit         Int
   table_count     Int
   min_table_price Int
   created_at      DateTime       @default(now())
-  updated_at      DateTime     @default(now())
+  updated_at      DateTime       @default(now())
   note            String?
   Bill            Bill[]
   FoodOrder       FoodOrder[]
@@ -84,30 +83,30 @@ model Wedding {
 }
 
 model Customer {
-  id         Int       @id @default(autoincrement())
+  id         String    @id
   name       String
-  phone      String
+  phone      String    @unique
   created_at DateTime  @default(now())
-  updated_at DateTime    @default(now())
+  updated_at DateTime  @default(now())
   Wedding    Wedding[]
 }
 
 model Service {
-  id           Int            @id @default(autoincrement())
+  id           String         @id
   name         String
   price        Int
   status       Boolean
   created_at   DateTime       @default(now())
-  updated_at   DateTime    @default(now())
+  updated_at   DateTime       @default(now())
   ServiceOrder ServiceOrder[]
 }
 
 model ServiceOrder {
-  service_id Int
-  wedding_id Int
+  service_id String
   count      Int
   created_at DateTime @default(now())
-  updated_at DateTime    @default(now())
+  updated_at DateTime @default(now())
+  wedding_id String
   Service    Service  @relation(fields: [service_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
@@ -116,30 +115,30 @@ model ServiceOrder {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
+  id             String           @id
   isAdmin        Boolean          @default(false)
   display_name   String
   username       String           @unique
   password       String
   created_at     DateTime         @default(now())
-  updated_at     DateTime    @default(now())
+  updated_at     DateTime         @default(now())
   UserPermission UserPermission[]
 }
 
 model Permission {
-  id             Int              @id @default(autoincrement())
+  id             String           @id
   name           String
   description    String?
   created_at     DateTime         @default(now())
-  updated_at     DateTime    @default(now())
+  updated_at     DateTime         @default(now())
   UserPermission UserPermission[]
 }
 
 model UserPermission {
-  user_id       Int
-  permission_id Int
+  user_id       String
+  permission_id String
   created_at    DateTime   @default(now())
-  updated_at    DateTime     @default(now())
+  updated_at    DateTime   @default(now())
   Permission    Permission @relation(fields: [permission_id], references: [id])
   User          User       @relation(fields: [user_id], references: [id])
 

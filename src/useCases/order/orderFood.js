@@ -1,5 +1,3 @@
-const { nanoid } = require('nanoid')
-
 module.exports = (dependencies) => {
     const { DB } = dependencies;
 
@@ -8,22 +6,19 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        name,
-        maxTableCount,
-        minTablePrice
+        food,
+        weddingId
     }) => {
         try {
-            const Lob = await DB.lobby.create({
+            await DB.FoodOrder.create({
                 data: {
-                    "id": nanoid(),
-                    "name": name,
-                    "max_table_count": Number(maxTableCount),
-                    "min_table_price": Number(minTablePrice)
+                    food_id: food.id,
+                    wedding_id: weddingId,
+                    count: food.count
                 }
-            })
-            return {
-                data: Lob
-            }
+            });
+
+
         } catch (error) {
             console.log(error)
             return {

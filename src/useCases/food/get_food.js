@@ -5,12 +5,26 @@ module.exports = (dependencies) => {
         throw new Error("DB should be exist in dependencies");
     }
 
-    const execute = async () => {
+    const execute = async ({
+        id=""
+    }) => {
         try {
-            const Food = await DB.food.findMany({});
+            let foods
+            console.log(id)
+            if(id !== "") { 
+                let food = await DB.food.findUnique({
+                    where: {
+                        id
+                    }
+                });
+                foods = [food]
+            }
+            else { 
+                foods = await DB.food.findMany({});
+            }
             
             return {
-                data: Food
+                data: foods
             };
         } catch (error) {
             console.log(error, "DB:GET_FOOD:ERROR")
