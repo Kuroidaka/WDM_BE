@@ -8,32 +8,27 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        isAdmin,
-        displayName,
-        username,
-        password
+        name,
+        phone
     }) => {
         try {
-            const user = await DB.user.create({
-                data : {
+            const customer = await DB.customer.create({
+                data: {
                     "id": nanoid(),
-                    "isAdmin": isAdmin,
-                    "display_name": displayName,
-                    "username": username,
-                    "password": password
+                    "name": name,
+                    "phone": phone
                 }
-            });
-            
+            })
             return {
-                data: user
-             };
-            
+                data: customer
+            }
         } catch (error) {
             console.log(error)
             return {
                 error: error
             }
         }
+        
     }
 
     return { execute };

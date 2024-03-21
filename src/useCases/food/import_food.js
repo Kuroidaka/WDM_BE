@@ -1,3 +1,5 @@
+const { nanoid } = require('nanoid')
+
 module.exports = (dependencies) => {
     const { DB } = dependencies;
 
@@ -15,6 +17,7 @@ module.exports = (dependencies) => {
         try {
             const Food = await DB.food.create({
                 data: {
+                    "id": nanoid(),
                     "name": name,
                     "price": Number(price),
                     "status": status,
