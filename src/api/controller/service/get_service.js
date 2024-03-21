@@ -1,4 +1,4 @@
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const { useCases:{
         service: {
             getService

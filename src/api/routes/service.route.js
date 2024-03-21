@@ -1,32 +1,31 @@
-import express from 'express'
+const express = require('express');
+const serviceController = require("../controller/service/index.js");
 
-import serviceController from "../controller/service/index.js"
-
-export default (dependencies) => {
-    const router = express.Router()
+module.exports = (dependencies) => {
+    const router = express.Router();
 
     const {
         getServiceController,
         importServiceController,
         updateServiceController,
         deleteServiceController
-
-    } = serviceController(dependencies)
+    } = serviceController(dependencies);
 
     router  
         .route("/get")
-        .get(getServiceController)
+        .get(getServiceController);
 
     router  
         .route("/import")
-        .post(importServiceController)
+        .post(importServiceController);
     
     router
         .route("/update")
-        .put(updateServiceController)
+        .put(updateServiceController);
 
     router
         .route("/delete")
-        .delete(deleteServiceController)
-    return router
-}
+        .delete(deleteServiceController);
+
+    return router;
+};

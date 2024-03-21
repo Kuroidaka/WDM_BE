@@ -1,14 +1,14 @@
-import getServiceController from "./get_service.js"
-import importServiceController from "./import_service.js"
-import updateServiceController from "./update_service.js"
-import deleteServiceController from "./delete_service.js"
+const getServiceController = require("./get_service.js");
+const importServiceController = require("./import_service.js");
+const updateServiceController = require("./update_service.js");
+const deleteServiceController = require("./delete_service.js");
 
 // service controller 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     return {
         getServiceController: getServiceController(dependencies),
         importServiceController: importServiceController(dependencies),
         updateServiceController: updateServiceController(dependencies),
         deleteServiceController: deleteServiceController(dependencies)
-    }
-}
+    };
+};
