@@ -8,7 +8,8 @@ export default (dependencies) => {
     const {
         getServiceController,
         importServiceController,
-        updateServiceController
+        updateServiceController,
+        deleteServiceController
 
     } = serviceController(dependencies)
 
@@ -22,7 +23,10 @@ export default (dependencies) => {
     
     router
         .route("/update")
-        .post(updateServiceController)
+        .put(updateServiceController)
 
+    router
+        .route("/delete")
+        .delete(deleteServiceController)
     return router
 }
