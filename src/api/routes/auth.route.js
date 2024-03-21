@@ -1,9 +1,9 @@
-import express from 'express'
+const express  = require('express')
 
-import authController from "../controller/auth/index.js"
-import verifyToken from "../middleware/validate_token.js"
+const authController  = require("../controller/auth/index.js")
+const verifyToken  = require("../middleware/validate_token.js")
 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const router = express.Router()
 
     const {

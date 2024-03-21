@@ -1,4 +1,4 @@
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const { DB } = dependencies;
 
     if (!DB) {

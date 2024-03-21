@@ -1,3 +1,7 @@
+const express = require("express")
+const foodRouter  = require("./food.route.js")
+const lobRouter  = require("./lob.route.js")
+const authRouter  = require("./auth.route.js")
 import express from "express"
 import foodRouter from "./food.route.js"
 import lobRouter from "./lob.route.js"
@@ -22,4 +26,4 @@ const routes = (dependencies) => {
     return router
 }
 
-export default routes
+module.exports = routes

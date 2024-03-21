@@ -1,4 +1,4 @@
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const { DB } = dependencies;
 
     if (!DB) {
@@ -13,6 +13,7 @@ export default (dependencies) => {
                 data: Food
             };
         } catch (error) {
+            console.log(error, "DB:GET_FOOD:ERROR")
             return { 
                 error: error
             }

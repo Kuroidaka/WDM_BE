@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 
-import init from "./src/app.js"
+const init  = require("./src/app.js")
 
 // Load biến môi trường từ tệp .env
 dotenv.config();

@@ -1,8 +1,8 @@
-import express from 'express'
+const express  = require( 'express')
 
-import lobController from "../controller/lob/index.js"
+const lobController  = require( "../controller/lob/index.js")
 
-export default (dependencies) => {
+module.exports = (dependencies) => {
     const router = express.Router()
 
     const {

@@ -1,7 +1,8 @@
 import food from "./food/index.js";
 import lob from "./lob/index.js";
 import user from "./user/index.js";
-import service from "./service/index.js";
+
+const service = require("./service/index.js");
 
 const useCases = {
     food,
@@ -10,4 +11,4 @@ const useCases = {
     service
 }
 
-export default useCases
+module.exports = useCases

@@ -1,9 +1,9 @@
-import DB from "./database.js"
-import useCases from "../useCases/index.js"
+const DB  = require("./database.js")
+const useCases  = require("../useCases/index.js")
 
 const dependencies = {
     DB,
     useCases
 }
 
-export default dependencies
+module.exports = dependencies
