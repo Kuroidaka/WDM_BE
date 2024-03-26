@@ -16,8 +16,6 @@ module.exports = (dependencies) => {
         deposit,
         tableCount,
         note,
-        foods,
-        services,
         minTablePrice,
         customerId
     }) => {
