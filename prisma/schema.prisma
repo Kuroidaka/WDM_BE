@@ -12,24 +12,22 @@ model Food {
   name       String
   price      Int
   status     Boolean     @default(true)
-  is_drink   Boolean
   created_at DateTime    @default(now())
   updated_at DateTime    @default(now())
   inventory  Int
-  FoodOrder  FoodOrder[]
 }
 
 model FoodOrder {
-  food_id    String
+  food_name       String
+  food_price      Int
   count      Int
   note       String?
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   wedding_id String
-  Food       Food     @relation(fields: [food_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id([food_id, wedding_id])
+  @@id(wedding_id)
   @@index([wedding_id], map: "FoodOrder_wedding_id_fkey")
 }
 
@@ -108,19 +106,18 @@ model Service {
   status       Boolean
   created_at   DateTime       @default(now())
   updated_at   DateTime       @default(now())
-  ServiceOrder ServiceOrder[]
 }
 
 model ServiceOrder {
-  service_id String
+  service_name         String
+  service_price        Int
   count      Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   wedding_id String
-  Service    Service  @relation(fields: [service_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id([service_id, wedding_id])
+  @@id(wedding_id)
   @@index([wedding_id], map: "ServiceOrder_wedding_id_fkey")
 }
 
