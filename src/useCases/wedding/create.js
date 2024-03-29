@@ -1,4 +1,26 @@
 const { nanoid } = require('nanoid')
+// const DB = require("../../config/database")
+
+// const getDeposit = async ({ weddingID }) => {
+
+//     const weddingWithLobType = await DB.wedding.findUnique({
+//         where: {
+//           id: weddingID,
+//         },
+//         include: {
+//           Lobby: {
+//             include: {
+//               LobType: true
+//             },
+//           },
+//         },
+//       });
+
+//     console.log(weddingWithLobType)
+
+// }
+
+// getDeposit({ weddingID : 'KTpFIgsq-Z65-CQZxKW2u' })
 
 module.exports = (dependencies) => {
     const { DB } = dependencies;
@@ -7,13 +29,13 @@ module.exports = (dependencies) => {
         throw new Error("DB should be exist in dependencies");
     }
 
+
     const execute = async ({
         groom,
         bride,
         weddingDate,
         shift,
         lobbyId,
-        deposit,
         tableCount,
         note,
         minTablePrice,

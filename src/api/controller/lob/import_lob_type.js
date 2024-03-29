@@ -1,20 +1,24 @@
 module.exports = (dependencies) => {
   const {
     useCases: {
-      lob: { importLob },
+      lob: { importLobType },
     },
   } = dependencies
 
   return async (req, res) => {
     try {
       const { 
-        name,
-        lobTypeId
+        maxTableCount,
+        minTablePrice,
+        depositPercent,
+        typeName
       } = req.body
 
-      const result = await importLob(dependencies).execute({
-        name,
-        lobTypeId
+      const result = await importLobType(dependencies).execute({
+        maxTableCount,
+        minTablePrice,
+        depositPercent,
+        typeName
       })
 
       if (result?.data) {

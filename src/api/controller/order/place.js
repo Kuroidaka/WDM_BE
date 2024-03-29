@@ -3,7 +3,7 @@ module.exports = (dependencies) => {
       useCases: {
         lob: { importLob },
         customer: { findCustomer, createCustomer },
-        wedding: { createWedding },
+        wedding: { createWedding, getWedding },
         order: { orderFood },
         food: { getFood, updateInventory },
         service: { getService }
@@ -16,7 +16,6 @@ module.exports = (dependencies) => {
       weddingDate,
       shift,
       lobbyId,
-      deposit,
       tableCount,
       phone,
       note,
@@ -38,7 +37,6 @@ module.exports = (dependencies) => {
         weddingDate,
         shift,
         lobbyId,
-        deposit,
         tableCount,
         note,
         minTablePrice,
@@ -100,13 +98,13 @@ module.exports = (dependencies) => {
           id: service.id
         })
         serviceData = serviceData.data[0]
-        
+
         totalPrice += serviceData.price
 
       }
 
       return {
-        totalPrice
+        price: totalPrice
       }
     }
 
@@ -118,7 +116,6 @@ module.exports = (dependencies) => {
           shift,
           lobbyId,
           phone,
-          deposit,
           tableCount,
           note,
           foods,
@@ -138,7 +135,6 @@ module.exports = (dependencies) => {
             shift,
             lobbyId,
             phone,
-            deposit,
             tableCount,
             note,
             minTablePrice
@@ -158,13 +154,20 @@ module.exports = (dependencies) => {
         }
 
         else if(req.query?.step === 'service'){
-          let totalPrice = currentPrice
+          let totalPrice = 0
           console.log(req.query?.step)
-          const result = await serviceOrderProcess({
+          const serviceData = await serviceOrderProcess({
             services,
             totalPrice
           })
-          return res.status(200).json({ data: result });
+
+          const dataWeeding = await getWedding(dependencies).execute({id: weddingId })
+
+          return res.status(200).json({ 
+            totalPrice: serviceData.price+currentPrice,
+            service: serviceData,
+            weddingData: dataWeeding 
+          });
         }
 
 

@@ -8,19 +8,23 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        name,
-        lobTypeId
+        maxTableCount,
+        minTablePrice,
+        depositPercent,
+        typeName
     }) => {
         try {
-            const Lob = await DB.lobby.create({
+            const LobType = await DB.lobType.create({
                 data: {
                     "id": nanoid(),
-                    "name": name,
-                    "lob_type_id": lobTypeId
+                    "max_table_count": Number(maxTableCount),
+                    "min_table_price": Number(minTablePrice),
+                    "deposit_percent": Number(depositPercent),
+                    "type_name": typeName
                 }
             })
             return {
-                data: Lob
+                data: LobType
             }
         } catch (error) {
             console.log(error)
