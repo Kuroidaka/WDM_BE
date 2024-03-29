@@ -5,7 +5,8 @@ module.exports = (dependencies) => {
         customer: { findCustomer, createCustomer },
         wedding: { createWedding },
         order: { orderFood },
-        food: { getFood, updateInventory }
+        food: { getFood, updateInventory },
+        service: { getService }
       },
     } = dependencies
 
@@ -52,15 +53,16 @@ module.exports = (dependencies) => {
     }
 
     const foodOrderProcess = async ({
-      foods,
-      tableCount
+        foods,
+        tableCount,
+        weddingId,
+        totalPrice
     }) => {
-      let totalPrice = 0
       // Customer data
       for (const food of foods) {
         await orderFood(dependencies).execute({
           food,
-          weddingId: wedding.data
+          weddingId: weddingId
         })
 
         let foodData = await getFood(dependencies).execute({id: food.id})
@@ -89,6 +91,25 @@ module.exports = (dependencies) => {
       }
     }
 
+    const serviceOrderProcess = async ({ 
+      services,
+      totalPrice
+    }) => {
+      for (const service of services) {
+        let serviceData = await getService(dependencies).execute({
+          id: service.id
+        })
+        serviceData = serviceData.data[0]
+        
+        totalPrice += serviceData.price
+
+      }
+
+      return {
+        totalPrice
+      }
+    }
+
     return async (req, res) => {  
       const {
           groom,
@@ -102,10 +123,13 @@ module.exports = (dependencies) => {
           note,
           foods,
           services,
-          minTablePrice
+          minTablePrice,
+          weddingId,
+          currentPrice
       } = req.body;
 
       try {
+        
         if(req.query?.step === 'wedding') {
           const result = await weddingProcess({          
             groom,
@@ -121,49 +145,28 @@ module.exports = (dependencies) => {
           })
           return res.status(200).json({ data: result });
         }
-        else if(res.query?.step === 'food'){
+        else if(req.query?.step === 'food'){
+          let totalPrice = 0
+          console.log(req.query?.step)
           const result = await foodOrderProcess({
             foods,
-            tableCount
+            tableCount,
+            weddingId,
+            totalPrice
           })
           return res.status(200).json({ data: result });
         }
 
+        else if(req.query?.step === 'service'){
+          let totalPrice = currentPrice
+          console.log(req.query?.step)
+          const result = await serviceOrderProcess({
+            services,
+            totalPrice
+          })
+          return res.status(200).json({ data: result });
+        }
 
-        // Convert weddingDate to a proper Date object
-
-
-        // // Create the Wedding order
-        // const wedding = await db.Wedding.create({
-        //     groom,
-        //     bride,
-        //     'wedding_date': new Date(weddingDate),
-        //     shift,
-        //     'lobby_id': lobbyId,
-        //     'customer_id': customerId,
-        //     deposit,
-        //     'table_count': tableCount,
-        //     'min_table_price': minTablePrice, // Assume a default or calculate based on input/lobby
-        //     note
-        // });
-
-        // // Associate foods and services with the wedding
-        // // Assuming you have methods to find foods and services by ID
-        // for (const foodId of foods) {
-        //     await db.FoodOrder.create({
-        //         food_id: foodId,
-        //         wedding_id: wedding.id,
-        //         count: 1 // Or another logic for the count
-        //     });
-        // }
-
-        // for (const serviceId of services) {
-        //     await db.ServiceOrder.create({
-        //         service_id: serviceId,
-        //         wedding_id: wedding.id,
-        //         count: 1 // Or another logic for the count
-        //     });
-        // }
 
         return res.status(400).json({msg: 'Which step do you want [food, wedding]?'});
       } catch (error) {
@@ -172,3 +175,5 @@ module.exports = (dependencies) => {
       }
   }
 }
+
+

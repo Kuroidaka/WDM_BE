@@ -5,18 +5,25 @@ module.exports = (dependencies) => {
         throw new Error("DB should be exist in dependencies");
     }
 
-    const execute = async () => {
-        try {
-            const service = await DB.service.findMany({});
-            
-            return {
-                data: service
-            };
-        } catch (error) {
-            return { 
-                error: error
-            }
+    const execute = async ({id = ""}) => {
+
+        let services
+        if(id !== "") { 
+            let service = await DB.service.findUnique({
+                where: {
+                    id
+                }
+            });
+            services = [service]
         }
+        else { 
+            services = await DB.service.findMany({});
+        }
+        
+        return {
+            data: services
+        };
+
     }
 
     return { execute };

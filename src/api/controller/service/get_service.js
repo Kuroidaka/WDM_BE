@@ -6,9 +6,9 @@ module.exports = (dependencies) => {
     } } = dependencies;
 
     return async (req, res) => {
-        
+        const { id="" } = req.body
         try {
-           const result = await getService(dependencies).execute()
+           const result = await getService(dependencies).execute({ id: id })
 
             if (result?.data) {
                 return res.status(200).json({ data: result?.data })
