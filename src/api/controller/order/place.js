@@ -24,12 +24,13 @@ module.exports = (dependencies) => {
       let customerData
       if(!phone) return res.status(500).json({msg: 'missing phone field'})
       customerData = await findCustomer(dependencies).execute({phone})
-      if(!customerData) {
+      if(!customerData.data) {
         customerData = await createCustomer(dependencies).execute({
           name: `${groom}/${bride}`,
           phone
         })
       }
+      console.log(customerData)
 
       const wedding = await createWedding(dependencies).execute({
         groom,
@@ -57,6 +58,8 @@ module.exports = (dependencies) => {
         totalPrice
     }) => {
       // Customer data
+
+      // console.log(foods)
       for (const food of foods) {
         await orderFood(dependencies).execute({
           food,

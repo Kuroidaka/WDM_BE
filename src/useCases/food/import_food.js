@@ -11,7 +11,6 @@ module.exports = (dependencies) => {
         name,
         price,
         status,
-        isDrink,
         inventory
     }) => {
         try {
@@ -21,7 +20,6 @@ module.exports = (dependencies) => {
                     "name": name,
                     "price": Number(price),
                     "status": status,
-                    "is_drink": isDrink,
                     "inventory": inventory
                 }
             })

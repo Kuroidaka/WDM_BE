@@ -18,6 +18,7 @@ model Food {
 }
 
 model FoodOrder {
+  id        String  @id
   food_name       String
   food_price      Int
   count      Int
@@ -27,8 +28,6 @@ model FoodOrder {
   wedding_id String
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id(wedding_id)
-  @@index([wedding_id], map: "FoodOrder_wedding_id_fkey")
 }
 
 model Bill {
@@ -109,6 +108,7 @@ model Service {
 }
 
 model ServiceOrder {
+  id        String  @id
   service_name         String
   service_price        Int
   count      Int
@@ -116,9 +116,6 @@ model ServiceOrder {
   updated_at DateTime @default(now())
   wedding_id String
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
-
-  @@id(wedding_id)
-  @@index([wedding_id], map: "ServiceOrder_wedding_id_fkey")
 }
 
 model User {

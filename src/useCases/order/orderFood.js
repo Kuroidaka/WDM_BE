@@ -1,5 +1,12 @@
+const { nanoid } = require("nanoid");
+
 module.exports = (dependencies) => {
-    const { DB } = dependencies;
+    const { 
+        DB,
+        useCases: {
+            food: { getFood },
+          },
+    } = dependencies;
 
     if (!DB) {
         throw new Error("DB should be exist in dependencies");
@@ -10,10 +17,16 @@ module.exports = (dependencies) => {
         weddingId
     }) => {
         try {
+
+            let foodData = await getFood(dependencies).execute({id: food.id })
+            foodData = foodData.data[0]
+
             await DB.FoodOrder.create({
                 data: {
-                    food_id: food.id,
-                    wedding_id: weddingId,
+                    id: nanoid(),
+                    "food_name": foodData.name,
+                    "food_price": foodData.price,
+                    "wedding_id": weddingId,
                     count: food.count
                 }
             });
