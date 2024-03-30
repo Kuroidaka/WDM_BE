@@ -1,7 +1,9 @@
 const orderFood  = require("./orderFood")
+const orderService = require("./orderService")
 
 const order = {
-    orderFood
+    orderFood,
+    orderService
 }
 
 module.exports = order

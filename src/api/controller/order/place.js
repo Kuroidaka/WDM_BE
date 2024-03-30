@@ -1,10 +1,12 @@
+const orderService = require("../../../useCases/order/orderService")
+
 module.exports = (dependencies) => {
     const {
       useCases: {
         lob: { importLob },
         customer: { findCustomer, createCustomer },
         wedding: { createWedding, getWedding },
-        order: { orderFood },
+        order: { orderFood, orderService },
         food: { getFood, updateInventory },
         service: { getService }
       },
@@ -94,9 +96,16 @@ module.exports = (dependencies) => {
 
     const serviceOrderProcess = async ({ 
       services,
-      totalPrice
+      totalPrice,
+      weddingId
     }) => {
       for (const service of services) {
+
+        await orderService(dependencies).execute({
+          service,
+          weddingId: weddingId
+        })
+
         let serviceData = await getService(dependencies).execute({
           id: service.id
         })
@@ -161,7 +170,8 @@ module.exports = (dependencies) => {
           console.log(req.query?.step)
           const serviceData = await serviceOrderProcess({
             services,
-            totalPrice
+            totalPrice,
+            weddingId
           })
 
           const dataWeeding = await getWedding(dependencies).execute({id: weddingId })
