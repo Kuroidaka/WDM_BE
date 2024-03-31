@@ -1,9 +1,10 @@
-const placeOrderController  = require("./place")
+const placeOrderController = require("./place")
+const getOrderController = require("./get_order")
 
 // food controller 
 module.exports = (dependencies) => {
     return {
-        placeOrderController: placeOrderController(dependencies)
-
+        placeOrderController: placeOrderController(dependencies),
+        getOrderController: getOrderController(dependencies)
     }
 }

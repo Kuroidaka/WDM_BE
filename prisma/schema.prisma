@@ -83,7 +83,7 @@ model Wedding {
   created_at      DateTime       @default(now())
   updated_at      DateTime       @default(now())
   note            String?
-  is_penalty_mode Boolean        @default(false)
+  is_penalty_mode Boolean        @default(true)
   Bill            Bill[]
   FoodOrder       FoodOrder[]
   ServiceOrder    ServiceOrder[]
