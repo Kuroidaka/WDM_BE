@@ -7,7 +7,8 @@ module.exports = (dependencies) => {
 
     const {
         placeOrderController,
-        getOrderController
+        getOrderController,
+        togglePenlOrderController
     } = orderController(dependencies)
 
     router  
@@ -17,6 +18,10 @@ module.exports = (dependencies) => {
     router  
         .route("/place")
         .post(placeOrderController)
+    
+    router  
+        .route("/penalty")
+        .post(togglePenlOrderController)
 
     return router
 }

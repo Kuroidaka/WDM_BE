@@ -17,7 +17,8 @@ module.exports = (dependencies) => {
                         id
                     },
                     include: {
-                        Bill: true
+                        Bill: true,
+                        Customer: true
                     }
                 });
 
@@ -31,6 +32,7 @@ module.exports = (dependencies) => {
                 orders = await DB.wedding.findMany({
                     include: {
                         Bill: true, // Include all related bills
+                        Customer: true
                       },
                 });
                 orders.forEach(order => {
