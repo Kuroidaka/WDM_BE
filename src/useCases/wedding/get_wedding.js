@@ -7,13 +7,20 @@ module.exports = (dependencies) => {
         throw new Error("DB should be exist in dependencies");
     }
 
-    const execute = async ({ id = ""}) => {
+    const execute = async ({ id = "" }) => {
         try {
             let weddings
             if(id !== "") { 
                 let wedding = await DB.wedding.findUnique({
                     where: {
                         id
+                    },
+                    include: {
+                        Lobby: {
+                            include: {
+                                LobType: true
+                            }
+                        }
                     }
                 });
                 weddings = [wedding]

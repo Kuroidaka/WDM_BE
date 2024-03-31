@@ -15,6 +15,11 @@ module.exports = (dependencies) => {
       },
     } = dependencies
 
+    // const checkWeddingDate = ({weddingDate}) => {
+
+
+
+    // }
     const weddingProcess = async ({  
       groom,
       bride,
@@ -35,7 +40,22 @@ module.exports = (dependencies) => {
           phone
         })
       }
-      console.log(customerData)
+
+      //check lob
+      const lobby = await DB.lobby.findUnique({
+        where: {
+          id: lobbyId
+        },
+        include: {
+          LobType: true
+        }
+      })
+
+      if(tableCount > lobby.LobType["max_table_count"]) {
+        return {
+          msg: `This lobby's max table is ${lobby.LobType["max_table_count"]}(your order: ${tableCount})`
+        }
+      }
 
       const wedding = await createWedding(dependencies).execute({
         groom,
@@ -94,30 +114,47 @@ module.exports = (dependencies) => {
         foods,
         weddingId,
         totalPrice,
+        tableCount,
+        minTablePrice,
+        lobName,
+        lobType
+
     }) => {
       // Customer data
       let errorFoodList = []
+      let tablePrice = 0
       // console.log(foods)
 
       await resetFoodOrder({weddingId})
-
+      //calc food price for each table
       for (const food of foods) {
+        let foodData = await getFood(dependencies).execute({id: food.id})
+        foodData = foodData.data[0]
+       
+        tablePrice += foodData.price * food.count
+        totalPrice += foodData.price * food.count * tableCount
+      }
+
+      // check valid lob min price
+
+      if(tablePrice < minTablePrice) {
+        return {
+          msg: `Lobby ${lobName} (Type ${lobType}) : min table price ${minTablePrice}(your: ${tablePrice})`
+        }
+      }
+
+      // insert food order table
+      for (const food of foods) { 
         const orderData = await orderFood(dependencies).execute({
           food,
           weddingId: weddingId,
         })
-
+  
         if(orderData?.error) {
           errorFoodList.push(orderData.msg)
           continue
         }
-
-        let foodData = await getFood(dependencies).execute({id: food.id})
-        foodData = foodData.data[0]
-       
-        totalPrice += foodData.price * food.count
       }
-
       return {
         msg: errorFoodList,
         totalPrice
@@ -126,6 +163,14 @@ module.exports = (dependencies) => {
 
     const getFoodPriceForWedding = async({weddingId}) => {
 
+      let dataWedding = await DB.wedding.findUnique({
+        where : {
+          id: weddingId
+        }
+      })
+
+      let tableCount = dataWedding['table_count'] 
+
       const foodWedding = await DB.foodOrder.findMany({
         where: {
           "wedding_id":weddingId
@@ -133,7 +178,7 @@ module.exports = (dependencies) => {
       })
 
       let foodPrice = foodWedding.reduce((total, current) => {
-        return total += current.food_price * current.count
+        return total += current.food_price * current.count * tableCount
       }, 0)
 
       return foodPrice
@@ -201,19 +246,6 @@ module.exports = (dependencies) => {
         return weddingWithLobType.Lobby.LobType["deposit_percent"]
     }
 
-    const processBilling = async({
-      weddingId,
-      servicePrice,
-      totalPrice,
-      deposit,
-      transacAmount,
-      remainPrice
-
-    }) => {
-     
-      // if bill not exist
-    }
-
     return async (req, res) => {  
       const {
           groom,
@@ -248,13 +280,33 @@ module.exports = (dependencies) => {
         }
         else if(req.query?.step === 'food'){
           let totalPrice = 0
-          console.log(req.query?.step)
+
+          let dataWedding = await DB.wedding.findUnique({
+            where : {
+              id: weddingId
+            },
+            include: {
+              Lobby: {
+                include: {
+                  LobType: true
+                }
+              }
+            }
+          })
+    
+          let tableCount = dataWedding['table_count']
+          let minTablePrice = dataWedding.Lobby.LobType["min_table_price"] 
+          let lobName = dataWedding.Lobby.name
+          let lobType = dataWedding.Lobby.LobType["type_name"]
+
           const result = await foodOrderProcess({
             foods,
             tableCount,
             weddingId,
             totalPrice,
-            res
+            minTablePrice,
+            lobName,
+            lobType
           })
           return res.status(200).json({ data: result });
         }
@@ -328,7 +380,7 @@ module.exports = (dependencies) => {
 
           // if bill exist
           let remainPrice
-          if(recentBill) { //deposit before
+          if(bills.data.length > 0) { //deposit before
             if(recentBill['remain_amount'] <= 0) {
               return res.status(200).json({ msg: `your bill have been fully paid`})
             }
@@ -485,7 +537,7 @@ module.exports = (dependencies) => {
 
           return res.status(200).json(finalData);
         }
-        return res.status(400).json({msg: 'Which step do you want [food, wedding]?'});
+        return res.status(400).json({msg: 'Which step do you want [food, wedding, service, deposit, pay]?'});
       } catch (error) {
           console.error('Error placing wedding order:', error);
           return res.status(500).send({ message: 'Failed to place wedding order' });

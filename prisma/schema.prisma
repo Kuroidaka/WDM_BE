@@ -80,7 +80,6 @@ model Wedding {
   lobby_id        String
   customer_id     String
   table_count     Int
-  min_table_price Int
   created_at      DateTime       @default(now())
   updated_at      DateTime       @default(now())
   note            String?

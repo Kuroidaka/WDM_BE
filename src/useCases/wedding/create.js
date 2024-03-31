@@ -31,7 +31,6 @@ module.exports = (dependencies) => {
         lobbyId,
         tableCount,
         note,
-        minTablePrice,
         customerId
     }) => {
         try {
@@ -52,7 +51,6 @@ module.exports = (dependencies) => {
                     "customer_id": customerId,
                     "table_count": tableCount,
                     note,
-                    "min_table_price": minTablePrice
                 }
             });
             
