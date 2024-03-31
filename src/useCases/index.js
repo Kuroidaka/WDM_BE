@@ -5,6 +5,7 @@ const customer  = require("./customer")
 const wedding  = require("./wedding")
 const order  = require("./order")
 const service = require("./service/index.js");
+const bill = require("./bill");
 
 const useCases = {
     food,
@@ -13,7 +14,8 @@ const useCases = {
     service,
     customer,
     wedding,
-    order
+    order,
+    bill
 }
 
 module.exports = useCases

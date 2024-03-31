@@ -10,7 +10,8 @@ module.exports = (dependencies) => {
         wedding: { createWedding, getWedding },
         order: { orderFood, orderService },
         food: { getFood, updateInventory },
-        service: { getService }
+        service: { getService },
+        bill: { createBill }
       },
     } = dependencies
 
@@ -55,12 +56,23 @@ module.exports = (dependencies) => {
 
     }
 
-    // const modifyInventory = async ({foodData, food, tableCount }) => {
-    //   await updateInventory(dependencies).execute({
-    //       id: food.id,
-    //       count: foodData.inventory - food.count*tableCount
-    //   })
-    // }
+    const modifyInventory = async ({ foodList }) => {
+
+      for(const food of foodList) {
+
+        let foodData = await getFood(dependencies).execute({id: food.food_id})
+        foodData = foodData.data[0]
+
+        let inventory = foodData.inventory
+
+        inventory -= food.count
+        
+        await updateInventory(dependencies).execute({
+            id: food.food_id,
+            count: inventory
+        })
+      }
+    }
 
     const resetFoodOrder = async ({ weddingId }) => {
       await DB.foodOrder.deleteMany({
@@ -256,7 +268,7 @@ module.exports = (dependencies) => {
           });
         }
 
-        else if(req.query?.step === 'payment'){
+        else if(req.query?.step === 'deposit'){
 
           let finalData = {}
           const transacAmount = req.body["transaction_amount"]
@@ -298,6 +310,26 @@ module.exports = (dependencies) => {
             "foodPrice": foodPrice,
             "servicePrice": servicePrice
           }
+          
+
+          // update inventory
+          if(req.query.type === "first") {
+            const foodDataWedding = await DB.foodOrder.findMany({
+              where: {
+                "wedding_id": weddingId
+              }
+            })
+            await modifyInventory({foodList: foodDataWedding})
+          }
+
+          // update bill
+          await createBill(dependencies).execute({
+            weddingId,
+            serviceTotalPrice: servicePrice,
+            totalPrice: totalPrice,
+            depositRequire: deposit,
+            depositAmount: transacAmount,
+          })
 
           return res.status(200).json(finalData);
         }

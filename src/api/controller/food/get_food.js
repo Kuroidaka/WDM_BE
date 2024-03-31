@@ -8,7 +8,9 @@ module.exports = (dependencies) => {
     return async (req, res) => {
         
         try {
-           const result = await getFood(dependencies).execute({})
+
+            const result = await getFood(dependencies).execute({id: req.body.id || ""})
+
 
             if (result?.data) {
                 return res.status(200).json({ data: result?.data })
