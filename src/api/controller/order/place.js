@@ -15,11 +15,29 @@ module.exports = (dependencies) => {
       },
     } = dependencies
 
-    // const checkWeddingDate = ({weddingDate}) => {
+    const checkWeddingDate = async ({weddingDate}) => {
+      // Parse the input date and ensure it's the start of the day
+      const startDate = new Date(weddingDate);
+      startDate.setHours(0, 0, 0, 0);
+  
+      // Create a new Date object for the end of the day
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 1);
+  
+      // Query the database to find any events on this date
+      const events = await DB.wedding.findMany({
+          where: {
+              wedding_date: {
+                  gte: startDate,
+                  lt: endDate,
+              },
+          },
+      });
+  
+      // Check if any events were found
+      return events
 
-
-
-    // }
+    }
     const weddingProcess = async ({  
       groom,
       bride,
@@ -56,6 +74,16 @@ module.exports = (dependencies) => {
           msg: `This lobby's max table is ${lobby.LobType["max_table_count"]}(your order: ${tableCount})`
         }
       }
+
+      const existDataOnDate = await checkWeddingDate({weddingDate})
+
+      const isValidDate = await existDataOnDate.some(data => data.shift === shift)
+
+      if(isValidDate) {
+        return { msg: "this date & shift had a wedding"}
+      }
+
+      console.log("existDataOnDate", existDataOnDate)
 
       const wedding = await createWedding(dependencies).execute({
         groom,
