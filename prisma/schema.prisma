@@ -39,6 +39,7 @@ model Bill {
   total_price         Int
   deposit_require     Int
   deposit_amount      Int
+  remain_amount       Int
 
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())

@@ -1,7 +1,9 @@
-const createBill  = require("./create_bill")
+const createBill = require("./create_bill")
+const getBill = require("./get_bill")
 
 const bill = {
-    createBill
+    createBill,
+    getBill
 }
 
 module.exports = bill

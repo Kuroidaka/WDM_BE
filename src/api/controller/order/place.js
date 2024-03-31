@@ -11,7 +11,7 @@ module.exports = (dependencies) => {
         order: { orderFood, orderService },
         food: { getFood, updateInventory },
         service: { getService },
-        bill: { createBill }
+        bill: { createBill, getBill }
       },
     } = dependencies
 
@@ -185,21 +185,34 @@ module.exports = (dependencies) => {
 
     const getDeposit = async ({ weddingId }) => {
 
-      const weddingWithLobType = await DB.wedding.findUnique({
-          where: {
-              id: weddingId,
-          },
-          include: {
-            Lobby: {
-              include: {
-                LobType: true
+        const weddingWithLobType = await DB.wedding.findUnique({
+            where: {
+                id: weddingId,
+            },
+            include: {
+              Lobby: {
+                include: {
+                  LobType: true
+                }
               }
-            }
-          },
-      });
-      console.log(weddingWithLobType)
-      return weddingWithLobType.Lobby.LobType["deposit_percent"]
-  }
+            },
+        });
+        console.log("weddingWithLobType", weddingWithLobType)
+        return weddingWithLobType.Lobby.LobType["deposit_percent"]
+    }
+
+    const processBilling = async({
+      weddingId,
+      servicePrice,
+      totalPrice,
+      deposit,
+      transacAmount,
+      remainPrice
+
+    }) => {
+     
+      // if bill not exist
+    }
 
     return async (req, res) => {  
       const {
@@ -276,7 +289,7 @@ module.exports = (dependencies) => {
           let foodPrice = await getFoodPriceForWedding({weddingId})
           let servicePrice = await getServicePriceForWedding({weddingId})
           let totalPrice = servicePrice + foodPrice
-          let remainPrice = totalPrice - transacAmount
+          
 
           // deposit
           const deposit = await getDeposit({weddingId})
@@ -300,6 +313,38 @@ module.exports = (dependencies) => {
               finalData.servicePee = servicePee
             }
           }
+
+          /*=============
+          PREVIOUS DEPOSIT
+          ===============*/
+
+          // check exist bill
+          const bills = await getBill(dependencies).execute({weddingId})
+          const recentBill = bills.data[0]
+
+          // if bill exist
+          let remainPrice
+          if(recentBill) { //deposit before
+            if(recentBill['remain_amount'] <= 0) {
+              return res.status(200).json({ msg: `your bill have been fully paid`})
+            }
+            let newTotalPrice = recentBill['remain_amount']
+            remainPrice = newTotalPrice - transacAmount
+          }
+          else { //first time deposit
+            // calc remain price
+            remainPrice = totalPrice - transacAmount
+
+            // update inventory
+            const foodDataWedding = await DB.foodOrder.findMany({
+              where: {
+                "wedding_id": weddingId
+              }
+            })
+            await modifyInventory({foodList: foodDataWedding})
+
+          }
+
           // final data
           finalData = {
             ...finalData,
@@ -313,23 +358,111 @@ module.exports = (dependencies) => {
           
 
           // update inventory
-          if(req.query.type === "first") {
-            const foodDataWedding = await DB.foodOrder.findMany({
-              where: {
-                "wedding_id": weddingId
-              }
-            })
-            await modifyInventory({foodList: foodDataWedding})
-          }
+          // if(req.query.type === "first") {
+          //   const foodDataWedding = await DB.foodOrder.findMany({
+          //     where: {
+          //       "wedding_id": weddingId
+          //     }
+          //   })
+          //   await modifyInventory({foodList: foodDataWedding})
+          // }
 
-          // update bill
+          // create bill
           await createBill(dependencies).execute({
             weddingId,
             serviceTotalPrice: servicePrice,
             totalPrice: totalPrice,
             depositRequire: deposit,
             depositAmount: transacAmount,
+            remainAmount: remainPrice
           })
+
+
+          return res.status(200).json(finalData);
+        }
+        else if(req.query?.step === 'pay'){
+
+          let finalData = {}
+          const transacAmount = req.body["transaction_amount"]
+          // calc price
+          let foodPrice = await getFoodPriceForWedding({weddingId})
+          let servicePrice = await getServicePriceForWedding({weddingId})
+          let totalPrice = servicePrice + foodPrice
+
+          // check penalty 
+          let dataWeeding = await getWedding(dependencies).execute({id: weddingId })
+          dataWeeding = dataWeeding.data[0]
+          if(dataWeeding["is_penalty_mode"]) {
+            let weddingDate = new Date(dataWeeding["wedding_date"] )
+            let payDate = new Date()
+
+            const timeDifference = calculateTimeDifference(weddingDate, payDate);
+
+            if(timeDifference.days > 0) {
+              let servicePee = timeDifference.days* (totalPrice / 100)
+              totalPrice = totalPrice + servicePee
+              finalData.servicePee = servicePee
+            }
+          }
+
+          /*=============
+          PREVIOUS DEPOSIT
+          ===============*/
+
+
+          // check exist bill
+          const bills = await getBill(dependencies).execute({weddingId})
+          const recentBill = bills.data[0]
+
+          // if bill exist
+          let remainPrice
+          if (recentBill){ // have deposit before
+            if(recentBill['remain_amount'] <= 0) {
+              return res.status(200).json({ msg: `your bill have been fully paid`})
+            }
+
+            let newTotalPrice = recentBill['remain_amount']
+            // calc remain price
+            remainPrice = newTotalPrice - transacAmount
+          }
+          else { //first time payment (no deposit before)
+            // calc remain price
+            remainPrice = totalPrice - transacAmount
+          }
+          
+          if(remainPrice > 0) {
+            return res.status(200).json({ msg: `payment is not enough, you paid: ${transacAmount} in remain total: ${newTotalPrice}`})
+          }
+           // update inventory
+          const foodDataWedding = await DB.foodOrder.findMany({
+            where: {
+              "wedding_id": weddingId
+            }
+          })
+          await modifyInventory({foodList: foodDataWedding})
+          // final data
+          finalData = {
+            ...finalData,
+            totalPrice: totalPrice,
+            weddingData: dataWeeding,
+            "deposit_amount": transacAmount,
+            "remain": remainPrice,
+            "foodPrice": foodPrice,
+            "servicePrice": servicePrice
+          }
+          // get deposit data
+          const deposit = await getDeposit({weddingId})
+
+          // create bill
+          await createBill(dependencies).execute({
+            weddingId,
+            serviceTotalPrice: servicePrice,
+            totalPrice: totalPrice,
+            depositRequire: deposit,
+            depositAmount: transacAmount,
+            remainAmount: remainPrice
+          })
+
 
           return res.status(200).json(finalData);
         }

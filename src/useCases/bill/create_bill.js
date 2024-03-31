@@ -13,6 +13,7 @@ module.exports = (dependencies) => {
         totalPrice,
         depositRequire,
         depositAmount,
+        remainAmount
     }) => {
         try {
             const bill = await DB.bill.create({
@@ -23,7 +24,8 @@ module.exports = (dependencies) => {
                     "service_total_price": serviceTotalPrice,
                     "total_price": totalPrice,
                     "deposit_require":depositRequire,
-                    "deposit_amount": depositAmount
+                    "deposit_amount": depositAmount,
+                    "remain_amount": remainAmount                
                     
                 }
             })
