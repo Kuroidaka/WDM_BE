@@ -1,14 +1,15 @@
 const express = require('express')
 
-const foodController = require( "../controller/food")
+const foodController = require( "../controller/food/index.js")
 
 module.exports = (dependencies) => {
     const router = express.Router()
 
     const {
         getFoodController,
-        importFoodController
-
+        importFoodController,
+        deleteFoodController,
+        updateFoodController
     } = foodController(dependencies)
 
     router  
@@ -18,6 +19,14 @@ module.exports = (dependencies) => {
     router  
         .route("/import")
         .post(importFoodController)
+        
+    router  
+        .route("/delete")
+        .delete(deleteFoodController)
+
+    router  
+        .route("/update")
+        .put(updateFoodController)
 
     return router
 }

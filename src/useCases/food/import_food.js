@@ -17,7 +17,6 @@ module.exports = (dependencies) => {
         try {
             const Food = await DB.food.create({
                 data: {
-                    "id": nanoid(),
                     "name": name,
                     "price": Number(price),
                     "status": status,
