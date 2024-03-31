@@ -299,18 +299,22 @@ module.exports = (dependencies) => {
           }
 
           // check penalty 
+          let extraFee = 0
           let dataWeeding = await getWedding(dependencies).execute({id: weddingId })
           dataWeeding = dataWeeding.data[0]
-          if(dataWeeding["is_penalty_mode"]) {
+
+          let isPenalty = dataWeeding["is_penalty_mode"]
+          if(isPenalty) {
             let weddingDate = new Date(dataWeeding["wedding_date"] )
             let payDate = new Date()
 
             const timeDifference = calculateTimeDifference(weddingDate, payDate);
 
             if(timeDifference.days > 0) {
-              let servicePee = timeDifference.days* (totalPrice / 100)
-              totalPrice = totalPrice + servicePee
-              finalData.servicePee = servicePee
+              extraFee = timeDifference.days* (totalPrice / 100)
+              finalData.extraFee = extraFee
+
+
             }
           }
 
@@ -329,11 +333,21 @@ module.exports = (dependencies) => {
               return res.status(200).json({ msg: `your bill have been fully paid`})
             }
             let newTotalPrice = recentBill['remain_amount']
+            if(!isPenalty && recentBill["extra_fee"] > 0) {
+              newTotalPrice -= recentBill["extra_fee"] 
+            }
+            else if(isPenalty && recentBill["extra_fee"] === 0) {
+              newTotalPrice += extraFee 
+            }
             remainPrice = newTotalPrice - transacAmount
           }
           else { //first time deposit
             // calc remain price
-            remainPrice = totalPrice - transacAmount
+            let newTotalPrice = totalPrice
+            if(isPenalty) {
+              newTotalPrice = totalPrice + extraFee 
+            } 
+            remainPrice = newTotalPrice - transacAmount
 
             // update inventory
             const foodDataWedding = await DB.foodOrder.findMany({
@@ -353,19 +367,9 @@ module.exports = (dependencies) => {
             "deposit_amount": transacAmount,
             "remain": remainPrice,
             "foodPrice": foodPrice,
-            "servicePrice": servicePrice
+            "servicePrice": servicePrice,
+            "extra_fee": extraFee
           }
-          
-
-          // update inventory
-          // if(req.query.type === "first") {
-          //   const foodDataWedding = await DB.foodOrder.findMany({
-          //     where: {
-          //       "wedding_id": weddingId
-          //     }
-          //   })
-          //   await modifyInventory({foodList: foodDataWedding})
-          // }
 
           // create bill
           await createBill(dependencies).execute({
@@ -374,7 +378,8 @@ module.exports = (dependencies) => {
             totalPrice: totalPrice,
             depositRequire: deposit,
             depositAmount: transacAmount,
-            remainAmount: remainPrice
+            remainAmount: remainPrice,
+            extraFee: extraFee
           })
 
 
@@ -390,18 +395,19 @@ module.exports = (dependencies) => {
           let totalPrice = servicePrice + foodPrice
 
           // check penalty 
+          let extraFee = 0
           let dataWeeding = await getWedding(dependencies).execute({id: weddingId })
           dataWeeding = dataWeeding.data[0]
-          if(dataWeeding["is_penalty_mode"]) {
+          let isPenalty = dataWeeding["is_penalty_mode"]
+          if(isPenalty) {
             let weddingDate = new Date(dataWeeding["wedding_date"] )
             let payDate = new Date()
 
             const timeDifference = calculateTimeDifference(weddingDate, payDate);
 
             if(timeDifference.days > 0) {
-              let servicePee = timeDifference.days* (totalPrice / 100)
-              totalPrice = totalPrice + servicePee
-              finalData.servicePee = servicePee
+              extraFee = timeDifference.days* (totalPrice / 100)
+              finalData.extraFee = extraFee
             }
           }
 
@@ -416,18 +422,29 @@ module.exports = (dependencies) => {
 
           // if bill exist
           let remainPrice
+          let newTotalPrice = 0
           if (recentBill){ // have deposit before
             if(recentBill['remain_amount'] <= 0) {
               return res.status(200).json({ msg: `your bill have been fully paid`})
             }
 
-            let newTotalPrice = recentBill['remain_amount']
+            newTotalPrice = recentBill['remain_amount']
             // calc remain price
+            if(!isPenalty && recentBill["extra_fee"] > 0) {
+              newTotalPrice -= recentBill["extra_fee"] 
+            }
+            else if(isPenalty && recentBill["extra_fee"] === 0) {
+              newTotalPrice += extraFee 
+            }
             remainPrice = newTotalPrice - transacAmount
           }
           else { //first time payment (no deposit before)
             // calc remain price
-            remainPrice = totalPrice - transacAmount
+            newTotalPrice = totalPrice
+            if(isPenalty) {
+              newTotalPrice = totalPrice + extraFee 
+            } 
+            remainPrice = newTotalPrice - transacAmount
           }
           
           if(remainPrice > 0) {
@@ -448,7 +465,8 @@ module.exports = (dependencies) => {
             "deposit_amount": transacAmount,
             "remain": remainPrice,
             "foodPrice": foodPrice,
-            "servicePrice": servicePrice
+            "servicePrice": servicePrice,
+            "extra_fee": extraFee
           }
           // get deposit data
           const deposit = await getDeposit({weddingId})
@@ -460,7 +478,8 @@ module.exports = (dependencies) => {
             totalPrice: totalPrice,
             depositRequire: deposit,
             depositAmount: transacAmount,
-            remainAmount: remainPrice
+            remainAmount: remainPrice,
+            extraFee: extraFee
           })
 
 
