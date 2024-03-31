@@ -14,13 +14,12 @@ module.exports = (dependencies) => {
 
         const weddingWithLobType = await DB.lobby.findUnique({
             where: {
-            id: id,
+                id: id,
             },
             include: {
                 LobType: true
             },
         });
-
         return weddingWithLobType.LobType["deposit_percent"]
     }
 
@@ -37,10 +36,10 @@ module.exports = (dependencies) => {
     }) => {
         try {
 
-            const deposit = await getDeposit({id: lobbyId})
-            if(!deposit) return {
-                error: "missing deposit default from lobby"
-            } 
+            // const deposit = await getDeposit({id: lobbyId})
+            // if(!deposit) return {
+            //     error: "missing deposit default from lobby"
+            // } 
 
             const wedding = await DB.wedding.create({
                 data : {
@@ -51,7 +50,6 @@ module.exports = (dependencies) => {
                     shift,
                     "lobby_id": lobbyId,
                     "customer_id": customerId,
-                    deposit: deposit,
                     "table_count": tableCount,
                     note,
                     "min_table_price": minTablePrice

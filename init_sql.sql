@@ -37,6 +37,16 @@ INSERT INTO LobType (id, max_table_count, min_table_price, deposit_percent, crea
 ('5', 30, 3000000, 30, '2023-05-05 14:15:00', '2023-05-05 14:15:00', 'E');
 
 -- ============================
+-- INIT LOBBY
+-- ============================
+INSERT INTO Lobby (id, name, lob_type_id) VALUES
+('YghjKl9N-1kjL-3kHl8-2jHg', 'Grand Ballroom', '1'),
+('2jkLmnO-3PqR-4sTuv-1wXyz', 'Skyline Terrace', '2'),
+('AbCdEf0-2GhI-3JkL-4MnOpQ', 'Ocean View Hall', '3'),
+('R5StUv6-WxYz-7XyZ-0aBcDe', 'Garden Pavilion', '4'),
+('FgHiJk1-LmNo-2PqRs-3TuVw', 'Royal Suite', '5');
+
+-- ============================
 -- INIT FOODS
 -- ============================
 INSERT INTO WDM.Food (id, name, price, inventory) VALUES

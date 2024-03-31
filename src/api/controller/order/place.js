@@ -2,6 +2,7 @@ const orderService = require("../../../useCases/order/orderService")
 
 module.exports = (dependencies) => {
     const {
+      DB,
       useCases: {
         lob: { importLob },
         customer: { findCustomer, createCustomer },
@@ -53,54 +54,88 @@ module.exports = (dependencies) => {
 
     }
 
+    // const modifyInventory = async ({foodData, food, tableCount }) => {
+    //   await updateInventory(dependencies).execute({
+    //       id: food.id,
+    //       count: foodData.inventory - food.count*tableCount
+    //   })
+    // }
+
+    const resetFoodOrder = async ({ weddingId }) => {
+      await DB.foodOrder.deleteMany({
+        where: {
+          "wedding_id": weddingId
+        }
+      })
+    }
+
+    const resetServiceOrder = async ({ weddingId }) => {
+      await DB.serviceOrder.deleteMany({
+        where: {
+          "wedding_id": weddingId
+        }
+      })
+    }
+
     const foodOrderProcess = async ({
         foods,
-        tableCount,
         weddingId,
-        totalPrice
+        totalPrice,
     }) => {
       // Customer data
-
+      let errorFoodList = []
       // console.log(foods)
+
+      await resetFoodOrder({weddingId})
+
       for (const food of foods) {
-        await orderFood(dependencies).execute({
+        const orderData = await orderFood(dependencies).execute({
           food,
-          weddingId: weddingId
+          weddingId: weddingId,
         })
+
+        if(orderData?.error) {
+          errorFoodList.push(orderData.msg)
+          continue
+        }
 
         let foodData = await getFood(dependencies).execute({id: food.id})
         foodData = foodData.data[0]
-
-        let inventory = foodData.inventory - food.count*tableCount
-        if(inventory < 0) {
-          console.log("out of stock")
-          return res.status(500).json({msg: `${foodData.name} is out of stock`})
-        }          
-        console.log(foodData.price )
-        totalPrice += foodData.price * tableCount * food.count
-      }
-      for (const food of foods) {
-        let foodData = await getFood(dependencies).execute({id: food.id})
-        foodData = foodData.data[0]
-
-        updateInventory(dependencies).execute({
-          id: food.id,
-          count: foodData.inventory - food.count*tableCount
-        })
+       
+        totalPrice += foodData.price * food.count
       }
 
       return {
+        msg: errorFoodList,
         totalPrice
       }
     }
 
+    const getFoodPriceForWedding = async({weddingId}) => {
+
+      const foodWedding = await DB.foodOrder.findMany({
+        where: {
+          "wedding_id":weddingId
+        }
+      })
+
+      let foodPrice = foodWedding.reduce((total, current) => {
+        return total += current.food_price * current.count
+      }, 0)
+
+      return foodPrice
+    }
+
     const serviceOrderProcess = async ({ 
       services,
-      totalPrice,
       weddingId
     }) => {
-      for (const service of services) {
+      let totalPrice = 0
 
+      await resetServiceOrder({weddingId})
+
+      for (const service of services) {
+        
         await orderService(dependencies).execute({
           service,
           weddingId: weddingId
@@ -116,7 +151,7 @@ module.exports = (dependencies) => {
       }
 
       return {
-        price: totalPrice
+        servicePrice: totalPrice
       }
     }
 
@@ -133,8 +168,7 @@ module.exports = (dependencies) => {
           foods,
           services,
           minTablePrice,
-          weddingId,
-          currentPrice
+          weddingId
       } = req.body;
 
       try {
@@ -160,14 +194,19 @@ module.exports = (dependencies) => {
             foods,
             tableCount,
             weddingId,
-            totalPrice
+            totalPrice,
+            res
           })
           return res.status(200).json({ data: result });
         }
 
         else if(req.query?.step === 'service'){
           let totalPrice = 0
-          console.log(req.query?.step)
+          // get food price
+          let foodPrice = await getFoodPriceForWedding({weddingId})
+
+          totalPrice += foodPrice
+
           const serviceData = await serviceOrderProcess({
             services,
             totalPrice,
@@ -177,9 +216,9 @@ module.exports = (dependencies) => {
           const dataWeeding = await getWedding(dependencies).execute({id: weddingId })
 
           return res.status(200).json({ 
-            totalPrice: serviceData.price+currentPrice,
+            totalPrice: totalPrice + serviceData.servicePrice,
             service: serviceData,
-            weddingData: dataWeeding 
+            weddingData: dataWeeding.data[0]
           });
         }
 

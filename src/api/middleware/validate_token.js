@@ -9,7 +9,6 @@ const verifyToken = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
   
-    console.log(token);
     if (!token) {
       return res.status(401).json({ msg: 'Access denied. No token provided.'});
     }
@@ -17,6 +16,7 @@ const verifyToken = async (req, res, next) => {
     try {
       const decoded = await jwt.verify(token, 'secret-key');
       req.user = decoded;
+      req.token = token
       // console.log("decode:", req.user)
       next();
     } catch (err) {

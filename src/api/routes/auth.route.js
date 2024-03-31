@@ -19,6 +19,10 @@ module.exports = (dependencies) => {
     router  
         .route("/register")
         .post(verifyToken, registerController)
+    
+    router  
+        .route("/check-token")
+        .post(verifyToken, (req, res) => res.status(200).json({ data: { token: req.token } }))
 
 
     return router

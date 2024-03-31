@@ -20,7 +20,7 @@ module.exports = (dependencies) => {
                     "name": name,
                     "price": Number(price),
                     "status": status,
-                    "inventory": inventory
+                    "inventory": inventory,
                 }
             })
             return {
