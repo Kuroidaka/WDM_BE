@@ -1,4 +1,5 @@
-const orderService = require("../../../useCases/order/orderService")
+const { calculateTimeDifference } = require('../../../utils/utils')
+
 
 module.exports = (dependencies) => {
     const {
@@ -126,6 +127,21 @@ module.exports = (dependencies) => {
       return foodPrice
     }
 
+    const getServicePriceForWedding = async({weddingId}) => {
+
+      const serviceWedding = await DB.serviceOrder.findMany({
+        where: {
+          "wedding_id":weddingId
+        }
+      })
+
+      let servicePrice = serviceWedding.reduce((total, current) => {
+        return total += current.service_price * current.count
+      }, 0)
+
+      return servicePrice
+    }
+
     const serviceOrderProcess = async ({ 
       services,
       weddingId
@@ -154,6 +170,24 @@ module.exports = (dependencies) => {
         servicePrice: totalPrice
       }
     }
+
+    const getDeposit = async ({ weddingId }) => {
+
+      const weddingWithLobType = await DB.wedding.findUnique({
+          where: {
+              id: weddingId,
+          },
+          include: {
+            Lobby: {
+              include: {
+                LobType: true
+              }
+            }
+          },
+      });
+      console.log(weddingWithLobType)
+      return weddingWithLobType.Lobby.LobType["deposit_percent"]
+  }
 
     return async (req, res) => {  
       const {
@@ -222,7 +256,51 @@ module.exports = (dependencies) => {
           });
         }
 
+        else if(req.query?.step === 'payment'){
 
+          let finalData = {}
+          const transacAmount = req.body["transaction_amount"]
+          // calc price
+          let foodPrice = await getFoodPriceForWedding({weddingId})
+          let servicePrice = await getServicePriceForWedding({weddingId})
+          let totalPrice = servicePrice + foodPrice
+          let remainPrice = totalPrice - transacAmount
+
+          // deposit
+          const deposit = await getDeposit({weddingId})
+          const depositRequire = deposit * totalPrice / 100
+          if(transacAmount < depositRequire) {
+            return res.status(200).json({msg: `deposit amount for this lobby need to be ${deposit}% <=> ${depositRequire}`});
+          }
+
+          // check penalty 
+          let dataWeeding = await getWedding(dependencies).execute({id: weddingId })
+          dataWeeding = dataWeeding.data[0]
+          if(dataWeeding["is_penalty_mode"]) {
+            let weddingDate = new Date(dataWeeding["wedding_date"] )
+            let payDate = new Date()
+
+            const timeDifference = calculateTimeDifference(weddingDate, payDate);
+
+            if(timeDifference.days > 0) {
+              let servicePee = timeDifference.days* (totalPrice / 100)
+              totalPrice = totalPrice + servicePee
+              finalData.servicePee = servicePee
+            }
+          }
+          // final data
+          finalData = {
+            ...finalData,
+            totalPrice: totalPrice,
+            weddingData: dataWeeding,
+            "deposit_amount": transacAmount,
+            "remain": remainPrice,
+            "foodPrice": foodPrice,
+            "servicePrice": servicePrice
+          }
+
+          return res.status(200).json(finalData);
+        }
         return res.status(400).json({msg: 'Which step do you want [food, wedding]?'});
       } catch (error) {
           console.error('Error placing wedding order:', error);
