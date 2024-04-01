@@ -78,8 +78,9 @@ module.exports = (dependencies) => {
       const existDataOnDate = await checkWeddingDate({weddingDate})
 
       const isValidDate = await existDataOnDate.some(data => data.shift === shift)
+      const isSameLob = await existDataOnDate.some(data => data['lobby_id'] === lobbyId)
 
-      if(isValidDate) {
+      if(isValidDate && isSameLob) {
         return { msg: "this date & shift had a wedding"}
       }
 
