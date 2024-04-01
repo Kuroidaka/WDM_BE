@@ -14,6 +14,10 @@ module.exports = (dependencies) => {
         try {
             const { username, password } = req.body;
             const notFound = { msg : 'username or password is incorrect' }
+
+            if(!username) return res.status(401).json(notFound)
+            if(!password) return res.status(401).json(notFound);
+
             // check exist account
             const result = await findUser(dependencies).execute({ username })
             if(result?.error) return res.status(500).json({ error: result?.error });
