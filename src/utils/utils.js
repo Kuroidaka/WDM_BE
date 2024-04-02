@@ -33,5 +33,23 @@ function compareDates(date1, date2) {
 // console.log(compareDates(date1, date2)); // true
 // console.log(compareDates(date1, date3)); // false
 
+// dataWeeding["wedding_date"]
+function calcPenalty (startDate, endDate= new Date(), totalPrice) {
+    let extraFee = 0
+    let weddingDate = new Date(startDate)
+    let payDate = new Date(endDate)
+    let isPenal = false
 
-module.exports = { calculateTimeDifference, compareDates }
+    const timeDifference = calculateTimeDifference(weddingDate, payDate);
+
+    if(timeDifference.days > 0) {
+      extraFee = timeDifference.days* (totalPrice / 100)
+      isPenal = true
+    }
+
+    return {
+        isPenal,
+        extraFee
+    }
+}
+module.exports = { calculateTimeDifference, compareDates, calcPenalty }
