@@ -4,7 +4,7 @@ const lobRouter  = require("./lob.route.js")
 const authRouter  = require("./auth.route.js")
 const customerRouter  = require("./customer.route.js")
 const orderRouter  = require("./order.route.js")
-
+const revenueRouter  = require("./revenue.route.js")
 const serviceRouter =  require("./service.route.js")
 
 const routes = (dependencies) => {
@@ -16,6 +16,7 @@ const routes = (dependencies) => {
     const service = serviceRouter(dependencies)
     const customer = customerRouter(dependencies)
     const order = orderRouter(dependencies)
+    const revenue = revenueRouter(dependencies)
 
 
     router.use('/food', food)
@@ -24,6 +25,7 @@ const routes = (dependencies) => {
     router.use('/auth', auth)
     router.use('/service', service)
     router.use('/order', order)
+    router.use('/revenue', revenue)
 
 
 
