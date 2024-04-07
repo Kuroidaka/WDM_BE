@@ -12,12 +12,13 @@ module.exports = (dependencies) => {
 
     return async (req, res) => {  
       const {
-        id=""
+        id="",
+        date
       } = req.body;
 
       try {
         
-        let order = await getOrder(dependencies).execute({ id: id })
+        let order = await getOrder(dependencies).execute({ id: id, date })
         order = order.data 
 
         order = order.map(data => {

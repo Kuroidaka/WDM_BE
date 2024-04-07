@@ -6,9 +6,11 @@ module.exports = (dependencies) => {
     } } = dependencies;
 
     return async (req, res) => {
-        
+        const { date, lobTypeId } = req.body
         try {
-           const result = await getLob(dependencies).execute()
+           const result = await getLob(dependencies).execute({date, lobTypeId})
+
+           
 
             if (result?.data) {
                 return res.status(200).json({ data: result?.data })
