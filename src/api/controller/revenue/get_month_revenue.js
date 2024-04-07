@@ -52,14 +52,22 @@ module.exports = (dependencies) => {
             "payment_date": {
               gte: startDate,
               lte: endDate
-            },
+            }
           }
         })
         let monthRevenue = calculateTotalRevenueByDate({billList: billData})
         
         finalData.monthRevenue = monthRevenue
 
-
+        // calc wedding num by month
+        const weddingData = await DB.wedding.findMany({
+          where: {
+            "wedding_date": {
+              gte: startDate,
+              lte: endDate
+            }
+          }
+        })
 
         return await res.status(200).json(finalData);
       } catch (error) {
