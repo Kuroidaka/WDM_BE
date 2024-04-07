@@ -1,3 +1,5 @@
+const { getStartAndEndOfDay } = require("../../utils/utils")
+
 module.exports = (dependencies) => {
     const { DB } = dependencies;
 
@@ -6,12 +8,13 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        id=""
+        id="",
+        date
     }) => {
         try {
             let orders
             console.log(id)
-            if(id !== "") { 
+            if(id !== "") {
                 let order = await DB.wedding.findUnique({
                     where: {
                         id
@@ -29,12 +32,26 @@ module.exports = (dependencies) => {
                 orders = [order]
             }
             else { 
-                orders = await DB.wedding.findMany({
+
+                let queryObj = {
                     include: {
                         Bill: true, // Include all related bills
                         Customer: true
                       },
-                });
+                }
+
+                if(date) { 
+                    const { startOfDay, endOfDay } = getStartAndEndOfDay(date)
+
+                    queryObj.where = {
+                        "wedding_date": {
+                            "gte": startOfDay.toISOString(),
+                            "lt": endOfDay.toISOString(),
+                        }
+                    }
+
+                } 
+                orders = await DB.wedding.findMany(queryObj);
                 orders.forEach(order => {
                     if (order.Bill && order.Bill.length > 0) {
                         order.Bill.sort((a, b) => b.payment_date - a.payment_date);

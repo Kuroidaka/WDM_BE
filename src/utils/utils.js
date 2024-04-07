@@ -52,4 +52,29 @@ function calcPenalty (startDate, endDate= new Date(), totalPrice) {
         extraFee
     }
 }
-module.exports = { calculateTimeDifference, compareDates, calcPenalty }
+
+function getStartAndEndOfDay(dateString) {
+  // Parse the date string
+  const date = new Date(dateString);
+
+  // Set to start of the day
+  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+
+  // Create a new Date object for the end of the current day
+  const endOfDay = new Date(startOfDay);
+  endOfDay.setDate(startOfDay.getDate() + 1);
+  endOfDay.setSeconds(endOfDay.getSeconds() - 1);
+
+  return {
+    startOfDay,
+    endOfDay // Now represents the last second of the current day
+  };
+}
+
+// // Usage
+// const { startOfDay, endOfDay } = getStartAndEndOfDay("Fri Apr 05 2024 10:54:22 GMT+0700 (Indochina Time)");
+// console.log(startOfDay); // Shows 2024-04-05T00:00:00.000Z (in GMT)
+// console.log(endOfDay); // Shows 2024-04-05T23:59:59.000Z (in GMT)
+
+  
+module.exports = { calculateTimeDifference, compareDates, calcPenalty, getStartAndEndOfDay }
