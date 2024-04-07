@@ -19,6 +19,7 @@ module.exports = (dependencies) => {
       try {
         
         let order = await getOrder(dependencies).execute({ id: id, date })
+
         order = order.data 
 
         order = order.map(data => {

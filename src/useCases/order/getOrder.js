@@ -1,3 +1,4 @@
+
 const { getStartAndEndOfDay } = require("../../utils/utils")
 
 module.exports = (dependencies) => {
@@ -14,7 +15,8 @@ module.exports = (dependencies) => {
         try {
             let orders
             console.log(id)
-            if(id !== "") {
+
+            if(id !== "") { 
                 let order = await DB.wedding.findUnique({
                     where: {
                         id
@@ -32,7 +34,6 @@ module.exports = (dependencies) => {
                 orders = [order]
             }
             else { 
-
                 let queryObj = {
                     include: {
                         Bill: true, // Include all related bills

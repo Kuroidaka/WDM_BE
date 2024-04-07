@@ -78,3 +78,4 @@ function getStartAndEndOfDay(dateString) {
 
   
 module.exports = { calculateTimeDifference, compareDates, calcPenalty, getStartAndEndOfDay }
+
