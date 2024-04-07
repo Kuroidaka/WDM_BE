@@ -14,7 +14,6 @@ module.exports = (dependencies) => {
         importLobTypeController,
         updateLobTypeController,
         deleteLobTypeController
-
     } = lobController(dependencies)
 
     router  
@@ -49,5 +48,6 @@ module.exports = (dependencies) => {
         .route("/delete_type")
         .delete(deleteLobTypeController)
         
+
     return router
 }
