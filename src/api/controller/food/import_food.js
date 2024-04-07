@@ -7,13 +7,13 @@ module.exports = (dependencies) => {
 
   return async (req, res) => {
     try {
-      const { name, price, status, isDrink, inventory } = req.body
+      const { name, price, status, is_drink, inventory } = req.body
 
       const result = await importFood(dependencies).execute({
         name,
         price,
         status,
-        isDrink,
+        is_drink,
         inventory
       })
 
