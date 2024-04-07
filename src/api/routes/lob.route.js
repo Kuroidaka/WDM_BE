@@ -11,7 +11,10 @@ module.exports = (dependencies) => {
         updateLobController,
         deleteLobController,
         getLobTypeController,
-        importLobTypeController
+        importLobTypeController,
+        updateLobTypeController,
+        deleteLobTypeController
+
     } = lobController(dependencies)
 
     router  
@@ -38,5 +41,13 @@ module.exports = (dependencies) => {
         .route("/delete")
         .delete(deleteLobController)
     
+    router
+        .route("/update_type")
+        .put(updateLobTypeController)
+
+    router
+        .route("/delete_type")
+        .delete(deleteLobTypeController)
+        
     return router
 }

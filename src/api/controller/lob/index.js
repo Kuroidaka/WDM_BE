@@ -5,6 +5,8 @@ const importLobTypeController  = require("./import_lob_type.js")
 const updateLobController = require("./update_lob.js")
 const deleteLobController = require("./delete_lob.js")
 
+const updateLobTypeController = require("./update_lob_type.js")
+const deleteLobTypeController = require("./delete_lob_type.js")
 
 module.exports = (dependencies) => {
     return {
@@ -13,6 +15,10 @@ module.exports = (dependencies) => {
         importLobController: importLobController(dependencies),
         importLobTypeController: importLobTypeController(dependencies),
         updateLobController: updateLobController(dependencies),
-        deleteLobController: deleteLobController(dependencies)
+        deleteLobController: deleteLobController(dependencies),
+
+        updateLobTypeController: updateLobTypeController(dependencies),
+        deleteLobTypeController: deleteLobTypeController(dependencies)
+
     }
 }
