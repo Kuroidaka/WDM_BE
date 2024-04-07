@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"  
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -12,25 +12,23 @@ model Food {
   name       String
   price      Int
   status     Boolean     @default(true)
-  is_drink   Boolean
   created_at DateTime    @default(now())
   updated_at DateTime    @default(now())
   inventory  Int
-  FoodOrder  FoodOrder[]
 }
 
 model FoodOrder {
-  food_id    String
+  id        String  @id
+  food_id   String
+  food_name       String
+  food_price      Int
   count      Int
   note       String?
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   wedding_id String
-  Food       Food     @relation(fields: [food_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
 
-  @@id([food_id, wedding_id])
-  @@index([wedding_id], map: "FoodOrder_wedding_id_fkey")
 }
 
 model Bill {
@@ -39,23 +37,38 @@ model Bill {
   payment_date        DateTime
   service_total_price Int
   total_price         Int
+  deposit_require     Int
+  deposit_amount      Int
+  remain_amount       Int
+  extra_fee           Int
+
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
   Wedding             Wedding  @relation(fields: [wedding_id], references: [id])
+  
 
   @@index([wedding_id], map: "Bill_wedding_id_fkey")
 }
 
 model Lobby {
-  id              String    @id
+  id          String    @id
+  name        String
+  lob_type_id String
+  LobType     LobType   @relation(fields: [lob_type_id], references: [id])
+  Wedding     Wedding[]
+
+  @@index([lob_type_id], map: "Lobby_lob_type_id_fkey")
+}
+
+model LobType {
+  id              String   @id
   max_table_count Int
   min_table_price Int
-  is_penalty_mode Boolean   @default(false)
-  deposit_percent Int       @default(30)
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @default(now())
-  name            String
-  Wedding         Wedding[]
+  deposit_percent Int      @default(30)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+  type_name       String
+  Lobby           Lobby[]
 }
 
 model Wedding {
@@ -66,12 +79,11 @@ model Wedding {
   shift           Shift
   lobby_id        String
   customer_id     String
-  deposit         Int
   table_count     Int
-  min_table_price Int
   created_at      DateTime       @default(now())
   updated_at      DateTime       @default(now())
   note            String?
+  is_penalty_mode Boolean        @default(true)
   Bill            Bill[]
   FoodOrder       FoodOrder[]
   ServiceOrder    ServiceOrder[]
@@ -98,20 +110,18 @@ model Service {
   status       Boolean
   created_at   DateTime       @default(now())
   updated_at   DateTime       @default(now())
-  ServiceOrder ServiceOrder[]
 }
 
 model ServiceOrder {
-  service_id String
+  id        String  @id
+  service_id         String
+  service_name         String
+  service_price        Int
   count      Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   wedding_id String
-  Service    Service  @relation(fields: [service_id], references: [id])
   Wedding    Wedding  @relation(fields: [wedding_id], references: [id])
-
-  @@id([service_id, wedding_id])
-  @@index([wedding_id], map: "ServiceOrder_wedding_id_fkey")
 }
 
 model User {

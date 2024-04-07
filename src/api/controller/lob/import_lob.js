@@ -9,14 +9,12 @@ module.exports = (dependencies) => {
     try {
       const { 
         name,
-        maxTableCount,
-        minTablePrice 
+        lobTypeId
       } = req.body
 
       const result = await importLob(dependencies).execute({
         name,
-        maxTableCount,
-        minTablePrice 
+        lobTypeId
       })
 
       if (result?.data) {

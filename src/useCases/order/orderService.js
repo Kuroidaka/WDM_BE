@@ -4,7 +4,7 @@ module.exports = (dependencies) => {
     const { 
         DB,
         useCases: {
-            food: { getFood, updateInventory },
+            service: { getService },
           },
     } = dependencies;
 
@@ -12,27 +12,26 @@ module.exports = (dependencies) => {
         throw new Error("DB should be exist in dependencies");
     }
 
-    const checkInventory = async ({foodData, food }) => {
+    const checkInventory = async ({serviceData, service }) => {
 
-        let inventory = foodData.inventory - food.count
+        let inventory = serviceData.inventory - service.count
         if(inventory < 0) {
             return {
-                msg: `${foodData.name} remains: ${foodData.inventory}, not enough to fulfill the order.`
+                msg: `${serviceData.name} remains: ${serviceData.inventory}, not enough to fulfill the order.`
             }
         }   
     }
 
     const execute = async ({
-        food,
+        service,
         weddingId
     }) => {
         try {
 
-            let foodData = await getFood(dependencies).execute({id: food.id })
-            foodData = foodData.data[0]
-            console.log("foodData", foodData)
+            let serviceData = await getService(dependencies).execute({ id: service.id })
+            serviceData = serviceData.data[0]
 
-            const inventory = await checkInventory({foodData, food})
+            const inventory = await checkInventory({serviceData, service})
             if(inventory?.msg) {
                 return {
                     error: true,
@@ -40,23 +39,22 @@ module.exports = (dependencies) => {
                 }
             }
 
-            await DB.FoodOrder.create({
+            await DB.ServiceOrder.create({
                 data: {
                     id: nanoid(),
-                    "food_id": foodData.id,
-                    "food_name": foodData.name,
-                    "food_price": foodData.price,
+                    "service_id": serviceData.id,
+                    "service_name": serviceData.name,
+                    "service_price": serviceData.price,
                     "wedding_id": weddingId,
-                    count: food.count
+                    count: service.count
                 }
             });
-
 
 
         } catch (error) {
             console.log(error)
             return {
-                error: error,
+                error: error
             }
         }
         

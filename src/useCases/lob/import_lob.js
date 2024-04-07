@@ -9,16 +9,14 @@ module.exports = (dependencies) => {
 
     const execute = async ({
         name,
-        maxTableCount,
-        minTablePrice
+        lobTypeId
     }) => {
         try {
             const Lob = await DB.lobby.create({
                 data: {
                     "id": nanoid(),
                     "name": name,
-                    "max_table_count": Number(maxTableCount),
-                    "min_table_price": Number(minTablePrice)
+                    "lob_type_id": lobTypeId
                 }
             })
             return {

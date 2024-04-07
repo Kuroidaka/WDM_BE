@@ -1,18 +1,16 @@
 module.exports = (dependencies) => {
     const {
       useCases: {
-        lob: { updateLob },
+        lob: { deleteLob },
       },
     } = dependencies
   
     return async (req, res) => {
       try {
-        const { id, name, lobTypeId } = req.body
+        const { id } = req.body
   
-        const result = await updateLob(dependencies).execute({
-          id,
-          name,
-          lobTypeId
+        const result = await deleteLob(dependencies).execute({
+          id
         })
   
         if (result?.data) {

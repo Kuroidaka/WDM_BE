@@ -1,19 +1,24 @@
 module.exports = (dependencies) => {
   const {
     useCases: {
-      food: { importFood },
+      lob: { importLobType },
     },
   } = dependencies
 
   return async (req, res) => {
     try {
-      const { name, price, status, inventory } = req.body
+      const { 
+        maxTableCount,
+        minTablePrice,
+        depositPercent,
+        typeName
+      } = req.body
 
-      const result = await importFood(dependencies).execute({
-        name,
-        price,
-        status,
-        inventory
+      const result = await importLobType(dependencies).execute({
+        maxTableCount,
+        minTablePrice,
+        depositPercent,
+        typeName
       })
 
       if (result?.data) {

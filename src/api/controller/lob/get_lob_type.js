@@ -1,14 +1,14 @@
 module.exports = (dependencies) => {
     const { useCases:{
-        service: {
-            getService
+        lob: {
+            getLobType
         }
     } } = dependencies;
 
     return async (req, res) => {
-        const { id="" } = req.body
+        
         try {
-           const result = await getService(dependencies).execute({ id: id })
+           const result = await getLobType(dependencies).execute()
 
             if (result?.data) {
                 return res.status(200).json({ data: result?.data })

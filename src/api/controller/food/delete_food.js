@@ -10,7 +10,7 @@ module.exports = (dependencies) => {
       const { id } = req.body
 
       const result = await deleteFood(dependencies).execute({
-        id,
+        id
       })
 
       if (result?.data) {

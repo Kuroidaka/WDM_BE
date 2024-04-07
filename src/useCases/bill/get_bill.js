@@ -8,21 +8,25 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        name,
-        price,
-        status
+        weddingId,
     }) => {
         try {
-            const Service = await DB.service.create({
-                data: {
-                    "id": nanoid(),
-                    "name": name,
-                    "price": Number(price),
-                    "status": status
-                }
-            })
+            let bill
+            if(weddingId) {
+                bill = await DB.bill.findMany({
+                    where: {
+                        "wedding_id": weddingId
+                    },
+                    orderBy: {
+                        "created_at": 'desc'
+                    }
+                })
+            }
+            else {
+                bill = await DB.bill.findMany()
+            }
             return {
-                data: Service
+                data: bill
             }
         } catch (error) {
             console.log(error)

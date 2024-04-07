@@ -36,3 +36,13 @@ module.exports = (dependencies) => {
 
     return { execute };
 };
+
+
+/*
+ID: 
+await getFood(dependencies).execute({id: food.id })
+foodData = foodData.data[0]
+
+let result = await getFood(dependencies).execute({})
+result = result.data
+*/
