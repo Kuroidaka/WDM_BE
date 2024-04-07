@@ -20,9 +20,7 @@ module.exports = (dependencies) => {
                 where: { id: id }
             });
 
-            return {
-                message: "Lob deleted successfully"
-            };
+            return { message: "Lob deleted successfully" };
         } catch (error) {
             console.log(error);
             return {
