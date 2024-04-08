@@ -9,11 +9,17 @@ module.exports = (dependencies) => {
         phone
     }) => {
         try {
-            const customer = await DB.customer.findUnique({
-              where: {
-                phone: phone
-              }  
-            })
+            let customer = {}
+            if(phone !== "") {
+                customer = await DB.customer.findUnique({
+                  where: {
+                    phone: phone
+                  }  
+                })
+            }
+            else {
+                customer = await DB.customer.findMany({})
+            }
             
             return {
                 data: customer

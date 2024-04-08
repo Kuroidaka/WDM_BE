@@ -8,7 +8,8 @@ module.exports = (dependencies) => {
 
     const {
         loginController,
-        registerController
+        registerController,
+        getUserController
 
     } = authController(dependencies)
 
@@ -23,6 +24,10 @@ module.exports = (dependencies) => {
     router  
         .route("/check-token")
         .post(verifyToken, (req, res) => res.status(200).json({ data: { token: req.token } }))
+
+    router  
+        .route("/get")
+        .get(getUserController)
 
 
     return router

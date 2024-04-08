@@ -1,20 +1,25 @@
 module.exports = (dependencies) => {
     const {
         useCases: {
-            customer: { getCustomer },
+            customer: { findCustomer },
         },
         } = dependencies
   
     return async (req, res) => {
       try {
-        const { name, phone } = req.body
-  
-        const result = await getCustomer(dependencies).execute({
-            name, phone
-        })
-  
-        if (result?.data) {
-          return res.status(200).json({ data: result?.data })
+        const { phone="" } = req.body
+        
+        let customerData 
+
+        if(phone) {
+          customerData = await findCustomer(dependencies).execute({phone})
+        }
+        else {
+          customerData = await findCustomer(dependencies).execute({phone: ""})
+        }
+
+        if (customerData?.data) {
+          return res.status(200).json({ data: customerData.data })
         } else if (result?.error) {
           return res.status(500).json({ error: result?.error})
         }
