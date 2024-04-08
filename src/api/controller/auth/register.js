@@ -23,7 +23,7 @@ module.exports = (dependencies) => {
             } = req.body;
 
             // check if account have privilege to register account
-            if(!req.user?.permissionList?.some(permission => permission.id === 'perm2')) return res.status(401).json({ msg: "you don't have permission" });
+            if(!req.user?.permissionList?.some(permission => permission.page === 'user')) return res.status(401).json({ msg: "you don't have permission" });
 
 
 
