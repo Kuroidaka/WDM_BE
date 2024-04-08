@@ -10,7 +10,8 @@ module.exports = (dependencies) => {
         loginController,
         registerController,
         getUserController,
-        changePasswordController
+        changePasswordController,
+        updateUserController
 
     } = authController(dependencies)
 
@@ -33,6 +34,10 @@ module.exports = (dependencies) => {
     router  
         .route("/change_password")
         .put(changePasswordController)
+   
+    router  
+        .route("/user/update")
+        .put(updateUserController)
 
 
     return router
