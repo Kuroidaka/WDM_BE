@@ -8,7 +8,8 @@ module.exports = (dependencies) => {
     const {
         importRoleController,
         getRoleController,
-        updateRolePermissionController
+        updateRolePermissionController,
+        setRoleUserController
     } = roleController(dependencies)
 
     router  
@@ -22,6 +23,10 @@ module.exports = (dependencies) => {
     router  
         .route("/role/update")
         .post(updateRolePermissionController)
+        
+    router  
+        .route("/role/set")
+        .post(setRoleUserController)
 
    
 
