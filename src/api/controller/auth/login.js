@@ -61,10 +61,10 @@ module.exports = (dependencies) => {
               },
             });
 
-            const permissionList = userPermissions.UserRole[0].Role.RolePermission.map(permission => permission.Permission)
+            const permissionList = userPermissions?.UserRole[0]?.Role?.RolePermission?.map(permission => permission.Permission)
 
             // // gen token
-            const token = jwt.sign({ id: account.id, username, isAdmin: account.isAdmin, permissionList }, 'secret-key', { expiresIn: '1h' });
+            const token = jwt.sign({ id: account.id, username, permissionList }, 'secret-key', { expiresIn: '1h' });
             console.log(token)
 
             return res.status(200).json({ data: { token } });

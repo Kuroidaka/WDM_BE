@@ -8,7 +8,6 @@ module.exports = (dependencies) => {
     }
 
     const execute = async ({
-        isAdmin,
         displayName,
         username,
         password
@@ -17,7 +16,6 @@ module.exports = (dependencies) => {
             const user = await DB.user.create({
                 data : {
                     "id": nanoid(),
-                    "isAdmin": isAdmin,
                     "display_name": displayName,
                     "username": username,
                     "password": password

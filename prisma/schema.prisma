@@ -126,7 +126,6 @@ model ServiceOrder {
 
 model User {
   id             String           @id @default(uuid())
-  isAdmin        Boolean          @default(false)
   display_name   String
   username       String           @unique
   password       String

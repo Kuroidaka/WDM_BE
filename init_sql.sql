@@ -1,4 +1,38 @@
 use WDM;
+
+-- ============================
+-- INIT PERMISSION
+-- ============================
+INSERT INTO Permission (id, name, description, page, created_at, updated_at)
+VALUES
+  ('perm1', 'View Report', 'Allows viewing reports', 'report', NOW(), NOW()),
+  ('perm2', 'Edit User', 'Allows editing users', 'user', NOW(), NOW()),
+  ('perm3', 'Access Lobby', 'Allows access to lobby', 'lobby', NOW(), NOW()),
+  ('perm4', 'Process Orders', 'Allows processing orders', 'order', NOW(), NOW()),
+  ('perm5', 'Manage Food Service', 'Allows managing food service', 'food_service', NOW(), NOW())
+;
+
+-- ============================
+-- INIT ROLES
+-- ============================
+INSERT INTO Role (id, name, created_at, updated_at)
+VALUES
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'Admin', NOW(), NOW()),
+  ('64007797-029d-4339-b78b-d51e2d2f3e1a', 'Staff', NOW(), NOW())
+;
+
+-- ============================
+-- INIT PERMISSION FOR ROLE
+-- ============================
+INSERT INTO RolePermission (role_id, permission_id, created_at, updated_at)
+VALUES
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'perm1', NOW(), NOW()),
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'perm2', NOW(), NOW()),
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'perm3', NOW(), NOW()),
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'perm4', NOW(), NOW()),
+  ('c5a5b477-73f5-4a97-b657-b2fd7a8efaae', 'perm5', NOW(), NOW())
+;
+
 -- ============================
 -- Create admin account
 -- tk: test
@@ -7,7 +41,6 @@ use WDM;
 INSERT INTO `WDM`.`User`
 (
     `id`,
-    `isAdmin`,
     `display_name`,
     `username`,
     `password`,
@@ -17,14 +50,31 @@ INSERT INTO `WDM`.`User`
 VALUES
 (
     'JIrWE1qRjTxBWzeFwIGGL',
-    1,
     'canh pham',
     'test',
     '$2a$10$BQ3PJs7iCxr.UNFHVnAoBeP0.QKp04kzc7/YwpSB/gx0ygPeFG5NO',
+    NOW(),
+    NOW()
+);
+
+-- ============================
+-- SET ROLE ADMIN FOR USER "test"
+-- ============================
+
+INSERT INTO `UserRole`
+(
+    `user_id`,
+    `role_id`,
+    `created_at`,
+    `updated_at`
+)
+VALUES
+(
+    'JIrWE1qRjTxBWzeFwIGGL',
+    'c5a5b477-73f5-4a97-b657-b2fd7a8efaae',
     '2024-03-21 04:22:05.578',
     '2024-03-21 04:22:05.578'
-); 
-
+);
 
 -- ============================
 -- INIT LOBBY TYPE
@@ -98,13 +148,3 @@ INSERT INTO Service (id, name, price, status) VALUES
 ('t5R6y7U8i9O0p1A2s3d', 'Bánh cưới', 5000000, true);
 
 
--- ============================
--- INIT PERMISSION
--- ============================
-INSERT INTO Permission (id, name, description, page, created_at, updated_at)
-VALUES
-  ('perm1', 'View Report', 'Allows viewing reports', 'report', NOW(), NOW()),
-  ('perm2', 'Edit User', 'Allows editing users', 'user', NOW(), NOW()),
-  ('perm3', 'Access Lobby', 'Allows access to lobby', 'lobby', NOW(), NOW()),
-  ('perm4', 'Process Orders', 'Allows processing orders', 'order', NOW(), NOW()),
-  ('perm5', 'Manage Food Service', 'Allows managing food service', 'food_service', NOW(), NOW());
