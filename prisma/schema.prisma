@@ -125,38 +125,71 @@ model ServiceOrder {
 }
 
 model User {
-  id             String           @id
+  id             String           @id @default(uuid())
   isAdmin        Boolean          @default(false)
   display_name   String
   username       String           @unique
   password       String
   created_at     DateTime         @default(now())
   updated_at     DateTime         @default(now())
-  UserPermission UserPermission[]
+  UserRole      UserRole[]
+}
+
+model UserRole {
+  user_id        String
+  role_id        String
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now())
+  User           User       @relation(fields: [user_id], references: [id])
+  Role           Role       @relation(fields: [role_id], references: [id])
+  
+  @@id([user_id, role_id])
+}
+
+model Role {
+  id            String     @id @default(uuid())
+  name          String     @unique
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now())
+  
+  RolePermission RolePermission[]
+  UserRole      UserRole[]
+}
+
+model RolePermission {
+  role_id   String
+  permission_id   String
+  Role          Role           @relation(fields: [role_id], references: [id])
+  Permission    Permission     @relation(fields: [permission_id], references: [id])
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now())
+
+  @@id([role_id, permission_id])
 }
 
 model Permission {
-  id             String           @id
+  id             String           @id @default(uuid())
   name           String
   description    String?
+  page           Page
   created_at     DateTime         @default(now())
   updated_at     DateTime         @default(now())
-  UserPermission UserPermission[]
+  
+  RolePermission           RolePermission[]
 }
 
-model UserPermission {
-  user_id       String
-  permission_id String
-  created_at    DateTime   @default(now())
-  updated_at    DateTime   @default(now())
-  Permission    Permission @relation(fields: [permission_id], references: [id])
-  User          User       @relation(fields: [user_id], references: [id])
 
-  @@id([user_id, permission_id])
-  @@index([permission_id], map: "UserPermission_permission_id_fkey")
-}
 
 enum Shift {
   noon
   evening
 }
+
+enum Page {
+  report
+  user
+  lobby
+  order
+  food_service
+}
+

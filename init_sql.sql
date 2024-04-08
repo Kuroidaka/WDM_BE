@@ -96,3 +96,15 @@ INSERT INTO Service (id, name, price, status) VALUES
 ('x7C8v9B0n1M2q3W4e5r', 'Lễ dân sự tại nhà', 10000000, true),
 ('y6U7i8O9p0A1s2D3f4g', 'MC đám cưới', 8000000, true),
 ('t5R6y7U8i9O0p1A2s3d', 'Bánh cưới', 5000000, true);
+
+
+-- ============================
+-- INIT PERMISSION
+-- ============================
+INSERT INTO Permission (id, name, description, page, created_at, updated_at)
+VALUES
+  ('perm1', 'View Report', 'Allows viewing reports', 'report', NOW(), NOW()),
+  ('perm2', 'Edit User', 'Allows editing users', 'user', NOW(), NOW()),
+  ('perm3', 'Access Lobby', 'Allows access to lobby', 'lobby', NOW(), NOW()),
+  ('perm4', 'Process Orders', 'Allows processing orders', 'order', NOW(), NOW()),
+  ('perm5', 'Manage Food Service', 'Allows managing food service', 'food_service', NOW(), NOW());
