@@ -27,12 +27,18 @@ module.exports = (dependencies) => {
         // check roleID have permissionID
         const rolePermissionCheck = await DB.RolePermission.findMany({
           where: {
-            role_id: roleID,
-            permission_id: permissionID
+            AND: [
+              {
+                role_id: roleID,
+              },
+              {
+                permission_id: permissionID
+              }
+            ]
           }
         })
 
-        if(rolePermissionCheck) {
+        if(rolePermissionCheck.length > 0) {
           return res.status(409).json({ msg: `Role ID: ${roleID} already have permission: ${permissionID}` })
         }
 

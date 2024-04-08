@@ -33,10 +33,25 @@ module.exports = (dependencies) => {
             }
           }
         }
-        const role = await DB.role.findMany(roleQuery)
+        let roleList = await DB.role.findMany(roleQuery)
 
+        roleList = roleList.map(role => {
+          role.RolePermission = role.RolePermission.map(permission => {
 
-        return res.status(200).json(role);
+            const {Permission, ...needData} = permission
+            return {
+              ...needData,
+              "name": permission.Permission.name,
+              "description": permission.Permission.description,
+              "page": permission.Permission.page,
+
+            }
+          })
+
+          return role
+        })
+
+        return res.status(200).json(roleList);
       } catch (error) {
           console.error('Error getting privilege:', error);
           return res.status(500).send({ message: 'Error getting privilege:r' });
