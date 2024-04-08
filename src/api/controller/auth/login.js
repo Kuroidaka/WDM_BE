@@ -3,10 +3,12 @@ const jwt  = require('jsonwebtoken')
 
 
 module.exports = (dependencies) => {
-    const { useCases:{
-        user: {
-            findUser
-        }
+    const { 
+        DB,
+        useCases:{
+            user: {
+                findUser
+            }
     } } = dependencies;
 
     return async (req, res) => {
@@ -29,8 +31,40 @@ module.exports = (dependencies) => {
                 return res.status(401).json(notFound);   
             }
 
+            const userPermissions = await DB.user.findUnique({
+              where: {
+                id: account.id,
+              },
+              select: {
+                UserRole: {
+                  select: {
+                    Role: {
+                      select: {
+                        RolePermission: {
+                          select: {
+                            Permission: {
+                              select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                page: true,
+                                created_at: true,
+                                updated_at: true,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            });
+
+            const permissionList = userPermissions?.UserRole[0]?.Role?.RolePermission?.map(permission => permission.Permission)
+
             // // gen token
-            const token = jwt.sign({ id: account.id, username, isAdmin: account.isAdmin }, 'secret-key', { expiresIn: '1h' });
+            const token = jwt.sign({ id: account.id, username, permissionList }, 'secret-key', { expiresIn: '1h' });
             console.log(token)
 
             return res.status(200).json({ data: { token } });

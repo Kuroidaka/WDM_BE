@@ -3,24 +3,29 @@ const jwt  = require('jsonwebtoken')
 
 
 module.exports = (dependencies) => {
-    const { useCases:{
-        user: {
-            addUser,
-            findUser
+    const { 
+        DB,
+        useCases:{
+            user: {
+                addUser,
+                findUser
+            }
         }
-    } } = dependencies;
+    } = dependencies;
 
     return async (req, res) => {
         
         try {
             const {
-                isAdmin,
                 displayName,
                 username,
                 password
             } = req.body;
 
-            if(!req.user.isAdmin) return res.status(401).json({ msg: "you don't have permission" });
+            // check if account have privilege to register account
+            if(!req.user?.permissionList?.some(permission => permission.page === 'user')) return res.status(401).json({ msg: "you don't have permission" });
+
+
 
             // check exist user
             const result = await findUser(dependencies).execute({ username })
@@ -37,14 +42,13 @@ module.exports = (dependencies) => {
 
             // create new user
             const newUser = await addUser(dependencies).execute({ 
-                isAdmin,
                 displayName,
                 username,
                 password: hashedPassword
             })
             if(newUser?.error) return res.status(500).json({ error: newUser?.error });
 
-            // const token = jwt.sign({ id: newUser.data.id, username, isAdmin }, 'secret-key', { expiresIn: '1h' });
+            // const token = jwt.sign({ id: newUser.data.id, username}, 'secret-key', { expiresIn: '1h' });
 
             return res.status(200).json({ data: newUser.data });
         } catch (error) {

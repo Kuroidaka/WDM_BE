@@ -6,6 +6,8 @@ const customerRouter  = require("./customer.route.js")
 const orderRouter  = require("./order.route.js")
 const revenueRouter  = require("./revenue.route.js")
 const serviceRouter =  require("./service.route.js")
+const privilegeRouter =  require("./privilege.route.js")
+
 
 const routes = (dependencies) => {
     const router = express.Router()
@@ -17,6 +19,7 @@ const routes = (dependencies) => {
     const customer = customerRouter(dependencies)
     const order = orderRouter(dependencies)
     const revenue = revenueRouter(dependencies)
+    const privilege = privilegeRouter(dependencies)
 
 
     router.use('/food', food)
@@ -26,6 +29,7 @@ const routes = (dependencies) => {
     router.use('/service', service)
     router.use('/order', order)
     router.use('/revenue', revenue)
+    router.use('/privilege', privilege)
 
 
 
