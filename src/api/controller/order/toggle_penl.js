@@ -63,7 +63,7 @@ module.exports = (dependencies) => {
           extraFee
         }
 
-        return res.status(200).json(finalResult);
+        return res.status(200).json(finalResult)
       } catch (error) {
           console.error('Error placing wedding order:', error);
           return res.status(500).send({ message: 'Failed to place wedding order' });
