@@ -22,7 +22,7 @@ module.exports = (dependencies) => {
             });
 
             return {
-                data:  "Service deleted successfully"
+                message :  "Service deleted successfully"
             };
         } catch (error) {
             console.log(error);
